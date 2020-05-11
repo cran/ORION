@@ -1,0 +1,391 @@
+---
+title: ORION Package Vignette
+author: 'LM Schäfer, L Lausser, HA Kestler'
+date: '`r Sys.Date()`'
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{ORION Package Vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+
+```{r, echo = FALSE, message = FALSE}
+knitr::opts_chunk$set(collapse = T, comment = '#>')
+oldoptions <- options()
+options(tibble.print_min = 4L, tibble.print_max = 4L)
+library(ORION)
+library(TunePareto)
+library(graphics)
+library(igraph)
+set.seed(1014)
+```
+
+# Introduction
+The *ORION* package is designed for screening feature representations for potential ordinal relations among distinct classes. It provides evidence for hypotheses of type $stage_1 \prec stage_2 \prec stage_3$ by evaluating their reflections in feature space.
+
+*ORION* can be applied in an explorative way, which allows for revealing new unknown relations, leading to new hypotheses. The package is optimized for exhaustive screens through all possible permutations within all subgroups of class labels.
+
+Overall, *ORION* allows for: 
+
+1. confirming whether proposed relations are reflected or not
+2. hypothesize new ordinal relations (explorative analysis)
+3. filter, organize and analyze ordinal relations
+
+The underlying algorithm is an extended version of the CASCADES algorithm published in L Lausser\*, LM Schäfer\*, LR Schirra\*, R Szekely, F Schmid, and HA Kestler, Assessing phenotype order in molecular data. Sci Rep 9, 1-10 (2019) \*equal contribution.
+
+Potential ordinal relations are identified in cross-validation experiments with ordinal classifier cascades. Cascades are in general prone to incorrect assumptions on the class order. Those, which pass a threshold on the minimal class-wise sensitivity, are seen as potential candidates. *ORION* allows cascades of any type of binary classifier. 
+
+## Notation
+A cascade is written as a character string. The relation between the class labels is given as '>'. For example, the cascade denoted as '1>2>3' indicates that 1 is neighbored by class 2, which itself is neighbored by 3. The class labels are sequential numeric values from 0 to (N-1), for N classes.
+
+## Class overview
+
+* `PredictionMap`:  
+It is made up of two elements (*\$pred*, *\$meta*). The meta information element which connects the values in the *\$pred*-matrix to a specific fold, run and contains the original label. The folds and runs are encoded as sequential numeric values starting at 1. The rownames of the *\$pred*-matrix show the classes of the binary base classifier. The elements are the prediction result of a specific training. The rows that correspond to base classifiers that would separate the same class consists of -1. Those rows are not used within the analysis.
+* `Subcascades`:  
+The *Subcascades* object is made up of a list of matrices. Each matrix comprises the evaluation results of cascades of a specific length. The rownames show the class order and the entries the sensitivity for each position of the cascade.
+* `Groupwise`:  
+It is a two-leveled list. The first level collects cascades of the same size. The second level contains lists of unique class sets. 
+ For each unique set of classes the corresponding orders and their performance are given as a matrix.
+* `Conf`:   
+The *Conf* object contains all class sensitivities for each binary trained classifiers. The *\$fC*-part is a column-vector and contains the sensitivities for the first class of each pairwise classifier. The rows stand for the pairwise classifiers, whereby '0vs1' means that this classifier was trained for class 0 against class 1, with 
+class 0 being the first class. The number '-1' is used as placeholder. The *\$sC*-part is a matrix and contains the preformance measures for all second classes, which are meant here as all classes except the first class. The rows correspond to the binary classifiers and the columns to the classes. Furthermore the foldlist (*\$foldList*) used and the dataset name (*\$dataName*) are saved as variable of the object.
+
+
+## Function overview
+
+*ORION* provides basic functions to search for general ordinal (sub)cascades and the reflection of class orders in labelled data as well as a *TunePareto* wrapper for the classifier of the ordinal classifier cascade.
+
+* `gen.predictionMap()` 
+* `subcascades()` 
+* `gen.conf()` 
+* `tunePareto.occ()` 
+
+Additionally, there are several functions that help summarizing and getting an overview of the results.
+
+1. Filtering
+    * `dropSizes()`
+    * `dropThreshold()`
+    * `dropSets()`
+    * `keepSizes()`
+    * `keepThreshold()`
+    * `keepSets()`
+
+2. Summary 
+    * `summarySubcascades()`
+    * `summaryClasswise()`
+    * `summarySubcascades()`
+
+3. Transformation
+    * `as.groupwise()`
+    * `as.subcascades()`
+    * `as.edgedataframe()`
+    
+4. Plotting (S3methods)
+    * `plot.Subcascades()`
+    * `plot.ConfusionTable()`
+    * `plot.Conf()`
+
+
+
+# Example
+## Analyze a dataset
+
+### Data preparation and preprocessing
+We are going to show the workflow of the *ORION* package by using the employee selection dataset, an ordinal, real-world datasets donated by Dr. Arie Ben David (Holon Inst. of Technology/Israel) and downloaded from https.//www.cs.waikato.ac.nz/ml/weka/datasets.html. 
+This dataset contains measurements of 488 job applicants. Based on 4 different features, corresponding to psychometric test results and interviews with the candidates a score was defined that shows how well the candidate fit to the job. The score is used as class label and it is expected that the order on the score (minimal score < ... < maximal score) is reflected in the candidate evaluation measured in the 4 features. 
+
+```{r}
+# Load and evaluate the dataset
+data(esl_org)
+#names of the features
+colnames(esl_org)
+#dimensions of the dataset
+dim(esl_org)
+```
+The out1 variable is used as class label. One can see that there are 9 different scores given. Based on the number of samples per class it might be reasonable to merge several scores into one group. We hence define a best and worst score which combines the best three and the worst three scores.
+```{r}
+# Extract and define class labels
+labels = esl_org[,5]-1
+table(labels)
+#maybe merge subgroups
+labels[labels<=2] = 2
+labels[labels>=6] = 6
+table(labels)
+```
+One can observe that after defining the classes the labels are not starting at 0 anymore, which is however required for the analysis.
+```{r}
+#redefine the labels such that they start at 0 and are consecutive
+labels = labels-2
+table(labels)
+```
+
+After having the class labels defined one can define the data. 
+```{r}
+data = esl_org[,1:4]
+```
+
+The data matrix with features as columns and samples as rows and the label vector are the input for the cascades analysis.
+
+### Applying the cascade algorithm
+We want to search for (sub)cascades by performing 10x10 cross-validation experiments based on binary linear support vector machines.
+
+The first step within the analysis is the generation of a fold list. This is done using the *generateCVRuns* command from the *TunePareto* package.
+```{r}
+#generate a fold list
+library(TunePareto)
+foldList = generateCVRuns(  labels= labels,
+                            ntimes      = 10,
+                            nfold       = 10,
+                            leaveOneOut = FALSE,
+                            stratified  = TRUE)
+```
+
+Within the next step the object of type *PredictionMap* is generated as basis for the further analysis. This function requires the samples to be in the rows and the features in the columns. The *PredictionMap* object consists of the prediction matrix and the corresponding meta data. Each row in the prediction matrix corresponds the one binary base classifier. The elements show the class prediction for the samples of the run and fold given in the corresponding column of the meta data. The corresponding label row states the original class of the sample analyzed.
+
+```{r}
+#generate the predicition map
+genMap = gen.predictionMap(data, labels, foldList = foldList, 
+                            classifier = tunePareto.svm(), kernel='linear')
+```
+The printed output shows that there is an additional packages loaded. The *e1071* package is loaded as the *tunePareto.svm()* function uses that package. If *parallel* is defined as *TRUE* a parallel evaluation is performed using the *doParallel*-package. 
+
+The predicition map is made up of two different elements.
+```{r}
+names(genMap)
+```
+
+Both elements are matrices.
+We can look at specific elements column 1, 11, 21 of the meta element.
+```{r}
+genMap$meta[,c(1,11,21)]
+```
+The meta information shows that those columns correspond to the first run of fold 1, 2 and 4 and the analysed samples belong the class 0.
+
+We can now check the first five rows of the corresponding prediction element 
+```{r}
+genMap$pred[1:5,c(1,11,21)]
+```
+The rownames of this matrix show the classes of the binary base classifier. The elements are the prediction result of a specific training.
+The rows that correspond to base classifiers that would separate the same class consists of -1. Those rows are not used within the analysis.
+
+Furthermore, in this example we can see that, in fold 1 and 2 of the first run, 0 is predicted for the given sample using the base classifiers 0 vs. 1, 0 vs. 2, 0 vs. 3 and 0 vs. 4. This means that for those cases the base classifier has classified the sample as its first class. In contrast to that the sample is classified as the base classifiers second class in fold 4 of the first run, as this is class 1 for 0 vs.1 and 2 for 0 vs. 2 the values are 1 and 2.
+
+
+We can search for all subcascades that have a minimal class-wise sensitivity higher than a given threshold, like 0.6. It is also possible to search only for subcascades of a given cascade size. If the parameters are not set the default values are all subcascades from maximal length to a length of 2 that pass a threshold of 0.
+```{r}
+#analyse the subcascades
+subcascades = subcascades(genMap, thresh=0.6)
+print(subcascades, max = 10)
+```
+
+To get the model of one of these cascades or to test in advance the classification performance of a specific class order the package provides a *TunePareto* wrapper for an ordinal classifier cascade. This model can be used to evaluate the decision boundaries, to calculate the performance of one specific class order or it can be applied to classify new unknown samples.
+```{r}
+# create a trained classifier model for to top ranked cascade of length 5
+model <- trainTuneParetoClassifier( 
+          classifier  = tunePareto.occ( base.classifier = tunePareto.svm()),
+          trainData   = data,
+          trainLabels = labels,
+          class.order = as.character(c(0,1,2,3,4)),
+          kernel      = 'linear',
+          cost        = 1)
+          
+# predict labels
+prediction <- predict(object = model, newdata = data)
+# calculate the class-wise sensitivities
+sensitivites = table(prediction[prediction==labels])/table(labels)
+```
+
+## Analyze the results
+
+### Overviews
+A general summary of the subcascades characteristics show that there are 60 cascades returned, which means that the threshold of 0.6 has already sorted out 260 out of the 320 possibilities. The 60 cascades are distributed over all lengths. 2 cascades have the maximal length of 5 and as 20 cascades of length 2 are found we know that all pairwise cascades were returned. This part of the summary can also solely be calculated by *summarySubcascades(subcascades)*. 
+Looking at the occurence by classes and size (also possible by *summaryClasses(subcascades)*) it can be seen that class 2 is underrepresented within the cascades of length 3 and 4. 
+As longer cascades are less likely to occure by chance and hence are of a specific interest also their performances are given in this summary.
+```{r}
+summary(subcascades)
+```
+
+As the given dataset comprises scores we expected the order '0>1>2>3>4' to be reflected within the given feature space. We can see that only this order, together with its reverse, can pass a minimal sensitivity criteria of 0.6 requiring all classes to be part of the cascade. The lacking difference between the forward and backward direction shows the symmetry of the dataset.
+
+Before we analyse whether also the found subcascades are of the expected order, we look into the class subgroup characteristics.
+
+To analyze whether there are specific class subgroups that are only found in one or two directions the function  *summaryGroupwise* counts how many permutations of one subgroup are found.  
+
+```{r}
+mat <- summaryGroupwise(subcascades)
+mat
+```
+As there are 2 cascades of length 5 corresponding to the forward and backward direction, there is one group of classes of which two permutations are found. For cascades of length 2 one can see that there are 10 groups, corresponding of the number of pairwise combinations, and all of them are found in 2 different ways. For cascades of length 3 and 4 one can see that there are 10 and 5 group of classes, respectively. 
+
+As there is one subgroup found which is reflected in 4 different orders we might ask which classes correspond to this group.
+
+To go into more detail about those subgroups consisting of the same classes one can have a look in the corresponding orders and their sensitivity performance measure.
+```{r}
+groupwise <- as.groupwise(subcascades)
+groupwise$size.4
+```
+This lets us determine that the one group occurring with 4 different permutations consists of class 0, 1, 3 and 4. One might hypothesize that for this group 4 permutations are possible because of class 2 separating (0,1) and (3,4). Also the observation that within all 4 permutations class 0 and 1 are on one side and 3 and 4 on the other supports the hypothesis that there is a broader separation between 0,1 and 3,4.
+
+The notation per subgroup can be reverted resulting in the original *Subcascades* object.
+```{r}
+subcascades.rev <- as.subcascades(groupwise)
+```
+
+### Filtering
+
+It is possible to filter the returned subcascades for those that show a minimal class-wise sensitivity higher (*keepThreshold()*) or lower (*dropThreshold()*) than a given threshold. 
+
+```{r}
+#subcascades passing the threshold of 0.7
+result <- keepThreshold(subcascades, thresh = 0.7)
+#the minimal sensitivity of all filtered cascade is > 0.7
+names(result)
+apply(result$size.4,1,min)
+```
+If a better classification performance is required no cascades of length 5 are returned anymore and only 4 of length 4.
+
+One might ask whether there is a performance gap between these four new longest cascades and the  remaining cascades of length 4 that do not pass a threshold of 0.7. To answer this one can filter all cascades that do not pass the threshold and check their performances.
+```{r}
+#subcascades that do not show a minimal class-wise sensitivity higher than 0.70
+result <- dropThreshold(subcascades, thresh = 0.7)
+#the minimal sensitivity of all filtered cascade is < 0.7
+apply(result$size.4,1,min)
+```
+One can see that the other cascades of length 4 have a minimal classwise sensitivity of 0.64 instead of 0.79 and hypothesize that '1>2>3>4', '4>3>2>1', '0>2>3>4', '4>3>2>0' are better reflected than the others. 
+
+
+There is also a function that allows to filter for a specific length (*keepSize()*) and one to filter for all except a specific length (*dropSize()*).
+```{r}
+#keep all cascades of length 3
+result <-keepSize(subcascades, size = 4)
+#only size.4 is returned
+names(result)
+```
+
+```{r}
+#keep all cascades except those of length 3
+result <-dropSize(subcascades, size = 3)
+#size.3 is not within the set anymore
+names(result)
+```
+
+
+*keepSets* can filter for specific orders (*ordered = TRUE*) or class combinations (*ordered = FALSE*).
+Observed earlier that the group (2,3,4) seems to be closer related than (0,1,2) we can filter for exactly those class groups or orders. The function allows for different set representations.
+```{r}
+result <- keepSets(subcascades, sets = list(c(0,1,2),c(2,3,4)), 
+                    direction = 'exact', ordered=F)
+unlist(lapply(result,rownames))
+result <- keepSets(subcascades, sets = c(0,1,2),
+                    direction = 'exact',ordered=T)
+unlist(lapply(result,rownames))
+result <- keepSets(subcascades, sets = c('0>1>2','2>3>4'), 
+                    direction = 'exact',ordered=T)
+unlist(lapply(result,rownames))
+```
+
+
+
+There are also more complex filtering options for *keepSets* and *dropSets*. The *direction* parameter defines whether a subset ('sub') or superset ('super'), or as previously the exact case 'exact', should be returned. Furthermore, if not the 'exact' case is used the *neighborhood* parameter defines whether the given classes have to be neighbors within the cascade (*direct*) or not (*indirect*). 
+Furhtermore the function provides the additional *type*-parameter (*all*,*any*). If there is a list of vectors given, the *all* parameter requires that the returned subcascades are part of all vectors within the list. 
+
+Again we analyse the groups (2,3,4) and (0,1,2) and filter for all their supersets. As those are groups of 3 classes we do not filter for subgroups as we are not interested in cascades of length 2. 
+```{r}
+#cascades can be given either as list of numeric vectors or as a vector of character strings
+set1 = list(c(0,1,2),c(2,3,4))
+set2 = c('0>1>2','2>3>4')
+```
+
+We start filtering for groups that contain those classes without requiring a specific class order but we require that those classes are direct neighbors. 
+```{r}
+result <- keepSets(subcascades, sets=set1, direction = 'super', 
+                    ordered = FALSE, neighborhood = 'direct', type = 'any')
+result
+```
+This analysis confirms that the cascades grouping class 2 to class 0 and 1 perform worse than grouping class 2 to class 3 and 4, as those are ranked lower. Setting the parameter type to 'all' requires that both groups (2,3,4) and (0,1,2) are part of the cascade and results in returning the full cascades.
+
+```{r}
+result.all <- keepSets(subcascades, sets=set1, direction = 'super', 
+                        ordered = FALSE, neighborhood = 'direct', type = 'all')
+unlist(t(lapply(result.all,rownames)))
+```
+
+We might ask whether the result changes if we do not require the classes to be within a direct neighborhood.
+```{r}
+result <- keepSets(subcascades, sets=set1, direction = 'super', 
+                    ordered = FALSE, neighborhood = 'direct', type = 'any')
+unlist(t(lapply(result,rownames)))
+result <- keepSets(subcascades, sets=set1, direction = 'super', 
+                    ordered = FALSE, neighborhood = 'indirect', type = 'any')
+unlist(t(lapply(result,rownames)))
+```
+There are no additional cascades returned, which shows that those classes are always next to each other if they are part of the same cascade.
+
+So far we have confirmed that the expected order is reflected in the feature space. We have figured out that there is a grouping of 0,1 and 3,4, with 2 being closer to 3,4 and that there are no cascades reflected that show a further class in the group 0,1,2 and 2,3,4.
+
+We might ask what orders are shown by the cascades that are not showing 2,3,4 or 0,1,2, so we filter out all of these cascades.
+
+```{r}
+result <- dropSets(subcascades, sets=set1, direction = 'super', 
+                    ordered = FALSE, neighborhood = 'direct', type = 'any')
+result$size.4
+```
+
+The longest that do not show the given three class patterns contain the classes 0,1,3,4. This is the class group that is found with 4 permutations.
+
+Furthermore, it might be of interest to check the classification result of the classes that are not part of the cascade. As an example we take the cascade 0>1>3>4 and ask to which class the samples of class 2 are allocated.
+```{r}
+result.neighbourhood = confusion.table(genMap, cascade = '0>1>3>4', 
+                                        other.classes='all', sort = TRUE)
+result.neighbourhood
+```
+One can observe that the samples of class 2 split between class 1 and 3 and hence between its neighbouring classes of the longest cascade. This analysis has an impact especially if no cascade including all classes is found as it allows to gain insight into the neighbourhood of classes that are not part of the order returned.
+
+## Visualize the results
+
+There are plot-functions for the *Subcascades*, the *ConfusionTable* and the *Conf*-object implemented.
+The cascades themselves can be exported to the *igraph* package.
+
+### Subcascades
+The plot of the *Subcascades* object gives a visual overview of the cascades. The rows correspond to the cascades (if there are many cascades within the *Subcascades* object it is recommended to preselect first), the columns correspond to the classes. Here, the cascades of size 4 and 5 are plotted. The classes on the x-axis are sorted based on the first element in the *Subcascades* object, which is in this case the longest one with the best performance. It can be seen that as soon as class 1 is part of the cascade class 0 reaches only 0.64 percent. Similar behaviour can be observed for classes 4 and 3: class 4 is better classified if class 3 is not included in the cascade. The gaps highlight that all 5 candidate cascades of size 4 are present with both directions. And the plot shows that the class-wise sensitivities for the single classes in the forward and backward direction are always the same within this example, with the exception of the cascades composed ofthe classes 0,1,3,4. Here, a symmetry break can be observed.
+```{r  fig.width=5, fig.height=6, fig.align = 'center', strip.white=TRUE,echo = TRUE }
+subcascades = dropSize(subcascades,c(2,3))
+plot(subcascades,row.sort = 'max',digits=2,thresh = 0.6)
+```
+
+### ConfusionTable
+
+The neighbourhood analysis is shown using the plot function for a *ConfusionTable*-object. This plot nicely shows the predicted class distribution per class label. One can observe that the samples of class 1 are partly classified as class 0 and 2. 
+```{r  fig.width=5, fig.asp = 0.7, fig.align = 'center', strip.white=TRUE,echo = FALSE }
+plot(result.neighbourhood, digits=2)
+```
+
+### Conf
+The visual analysis of the base classifier performance shows that the binary classifiers perfom better for not-neigbored classes and the worst for separating class 0 and 1.
+```{r}
+base.classifier = gen.conf(genMap)
+```
+```{r  fig.width=5, fig.asp = 0.9, fig.align = 'center', strip.white=TRUE,echo = FALSE }
+plot(base.classifier, digits=2,symmetric=TRUE, na.color = 'white')
+```
+
+### Graph
+Another possibility to visualize selected cascades is as graph. To easily use the R-package igraph, there is a function called *as.edgedataframe* implemented in the package. This function converts the subcascades object into a 4-column dataframe. The first and second column shows between which classes relations are found. The third column corresponds to a subcascade ID to recover which relations belong to the same cascade. This ID is created as increasing number and might be used to color the subcascades differently within the graph. In the last column the size of the subcascade to which the relation belongs is saved. This might be used to draw the cascades of different size differently. Within our example the graph representation shows that there are four cascades of size 4, passing the threshold of 0.7, indicated by the different colors. The overlap of these subcascades is also easily visible.
+```{r}
+#filter for minimal class-wise sensitivity and size
+result = keepThreshold(subcascades,0.7)
+result = keepSize(result,c(4,5))
+#convert to a dataframe that can be used in igraph
+edges = as.edgedataframe(result)
+#use the first and second column to make a graph object
+g = graph_from_data_frame(edges[,c(1,2)], directed = TRUE)
+#assign the subcascade IDs as edge weights
+E(g)$weight = edges[,3]
+```
+```{r  fig.width=5, fig.asp = 0.9, fig.align = 'center', strip.white=TRUE,echo = FALSE }
+plot(g,edge.color=E(g)$weight,edge.arrow.size=0.5,
+     edge.curved =seq(-0.5, 1, length = ecount(g)))
+options(oldoptions)
+```

@@ -1,0 +1,42 @@
+useDynLib(ORION, .registration = TRUE)
+
+import("e1071", "TunePareto","knitr","rmarkdown","doParallel", "igraph", "foreach")
+importFrom("utils", "sessionInfo")
+importFrom("stats", "predict")
+importFrom("grDevices", "colorRampPalette")
+importFrom("graphics", "abline", "axis", "mtext", "par", "plot","polygon", "rect", "strwidth", "text")
+
+S3method(summary, Subcascades)
+S3method(plot, ConfusionTable)
+S3method(plot, Conf)
+S3method(plot, Subcascades)
+
+export(
+	subcascades,
+	gen.conf,
+	gen.predictionMap,
+	confusion.table,
+	dropSize,
+	dropThreshold,
+	dropSets,
+	keepSize,
+	keepThreshold,
+	keepSets,
+	plot.ConfusionTable,
+	mergeSubcascades,
+	summaryGroupwise,
+	summaryClasses,
+	summarySubcascades,
+	as.groupwise,
+	as.subcascades,
+	as.edgedataframe,
+	tunePareto.occ
+)
+
+
+
+
+
+
+
+

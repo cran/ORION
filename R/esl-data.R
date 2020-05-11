@@ -1,0 +1,38 @@
+#' ESL Dataset
+#'
+#' The original ESL data set contains 488 profiles of applicants for certain industrial
+#' jobs.  Expert psychologists of a recruiting company, based upon psychometric
+#' test results and interviews with the candidates, determined the values of the
+#' input attributes. The output is the an overall score corresponding to the
+#' degree of fitness of the candidate to this type of job.
+#' Here classes 1-3 are merged to one group and all classes >6 are merged to one group.
+#' Furtheremore, the data is relabeled to start at 0 and only 20 samples per class are
+#' included.
+#'
+#' @docType data
+#'
+#' @usage data(esl)
+#'
+#' @keywords datasets
+#'
+#' @references ordinal, real-world datasets donated by Dr. Arie Ben David (Holon Inst. of Technology/Israel)
+#'  Donor: Arie Ben David
+#'           MIS, Dept. of Technology Management 
+#'           Holon Academic Inst. of Technology
+#'           52 Golomb St.
+#'           Holon 58102
+#'           Israel
+#'           abendav@hait.ac.il
+#'   Owner: Yoav Ganzah
+#'           Business Administration School
+#'           Tel Aviv Univerity
+#'           Ramat Aviv 69978
+#'           Israel
+#'
+#' @source \href{https://www.cs.waikato.ac.nz/ml/weka/datasets.html}{Weka dataset}
+#' (datasets-arie_ben_david.tar.gz, 11,348 Bytes)
+#'
+#' @examples
+#' data(esl)
+#' 
+'esl'
