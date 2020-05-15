@@ -1,5 +1,6 @@
-bc4b3801ead19a789767d1acf6552e55 *DESCRIPTION
-0499f77c31069b06d2b5f7534ea42e9a *NAMESPACE
+3f763bf6b210642734a40aabc2228e24 *DESCRIPTION
+235edf18dcb86612152c2e54e6dc2ac2 *NAMESPACE
+bf9e08d5094fbe31ad5e98813a24d0e0 *NEWS.md
 284d42a2ba7f1d42b39dc7cb3a1f6f87 *R/as.edgedataframe.R
 d5430772c93c065da124633f715ec061 *R/as.groupwise.R
 9f476ff25afd74df7097cdc606ec1e7e *R/as.subcascades.R
@@ -48,14 +49,14 @@ aa7e583c68090079b1816bc5a79a6e48 *R/summary.R
 7b90492e545cf214eee1bd41494426f0 *R/summaryClasses.R
 391e8ebe862de8c695a84d1aed282bcb *R/summaryGroupwise.R
 b56bf3855e13cabe3a3d752578e7421e *R/summarySubcascades.R
-5359a653e4e0eb6b1edfd8b24a446b02 *R/train.tunePareto.occ.R
+5d4eb29a01e9a7765bb95bae979ba8d8 *R/train.tunePareto.occ.R
 0a6253b6ba17bb42a5203f105e405f8d *R/tunePareto.occ.R
 236d8609ac688b4969e30e8b49d4fd6a *build/vignette.rds
 0fd12746a1a8b46a9409b9667f220e7a *data/esl.RData
 1a53d9de30f9eb024016266108029d98 *data/esl_org.RData
 a94456773b8b2680b9232969390dd5f4 *inst/doc/ORION.R
 8ab8ce648030c4139c8a12c5a080d6b1 *inst/doc/ORION.Rmd
-6047f129b27e73509728c461544010e5 *inst/doc/ORION.html
+40f95417cf405c256e2395925541db10 *inst/doc/ORION.html
 526a48d91572f508e6a1f9dec426d065 *man/as.edgedataframe.Rd
 fe8a2a224ef31d0a5bb81a3fb357f3a7 *man/as.groupwise.Rd
 7c27f7f5821aa9e6341bdc2414051111 *man/as.subcascades.Rd
@@ -80,7 +81,7 @@ e717e978fdb45553a25cd9b5c11eb829 *man/gen.predictionMap.Rd
 a97aec2f3a4fa478be6adfab120e9c86 *man/summaryGroupwise.Rd
 8af429c8319d8352180da40f56332848 *man/summarySubcascades.Rd
 5985145a202185dea9bcd9cf17cd1a96 *man/tunePareto.occ.Rd
-644af6677e9fcb2ac9876441390e8c78 *src/cascade.c
+03b69051a22b446895de9e58f53442e0 *src/cascade.c
 32b378afd91bbe61797c9ad396566467 *src/cascade.h
 7c22b1b500cab25872924e218f1645f5 *src/registerDynamicSymbol.c
 8ab8ce648030c4139c8a12c5a080d6b1 *vignettes/ORION.Rmd

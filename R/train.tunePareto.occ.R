@@ -12,9 +12,6 @@ train.tunePareto.occ <- function(..., data, labels, base.classifier, class.order
   if (length(labels) != nrow(data))
     stop('Dimensions of data matrix and class label vector are incompatible!')
   
-  if (length(base.classifier$requiredPackages) > 0)
-    lapply(base.classifier$requiredPackages, function(package) require(package, character.only = TRUE))
-  
   if (!is.character(class.order))
     stop(' class.order is required to be a character vector.')
   

@@ -1,6 +1,6 @@
 useDynLib(ORION, .registration = TRUE)
 
-import("e1071", "TunePareto","knitr","rmarkdown","doParallel", "igraph", "foreach")
+import("e1071", "randomForest", "TunePareto","knitr","rmarkdown","doParallel", "igraph", "foreach")
 importFrom("utils", "sessionInfo")
 importFrom("stats", "predict")
 importFrom("grDevices", "colorRampPalette")

@@ -1,7 +1,10 @@
 #include "cascade.h"
 
 
+int main(int argc, char* argv[]) {
 
+    return 0;
+}
 
 // Tested alle Permutationen einer bestimmten Auswahl
 void cascades(   double* fC,
@@ -173,60 +176,63 @@ void subcascades(double* fC,
         vec[counter[i]] = 0;
     }
   
-    while(counter[(*dropSize)-1] < *numClass-i)
+    if(*dropSize > 0)
     {
-        i=-1;
-        for(j=0; j < *dropSize; j++)
+        while(counter[(*dropSize)-1] < *numClass-i)
         {
-            if(counter[j] < *numClass-j-1)
+            i=-1;
+            for(j=0; j < *dropSize; j++)
             {
-                i=j;
+                if(counter[j] < *numClass-j-1)
+                {
+                    i=j;
+                    break;
+                }
+            }
+            
+            if(i==-1)
+            {
                 break;
-            }
-        }
-        
-        if(i==-1)
-        {
-            break;
-        }else{
-            counter[i]++;
+            }else{
+                counter[i]++;
+                
+                for(j=i-1; j >=0; j--)
+                {
+                    counter[j] = counter[j+1]+1;
+                }
             
-            for(j=i-1; j >=0; j--)
-            {
-                counter[j] = counter[j+1]+1;
-            }
-          
-            for(i=0; i < *dropSize; i++)
-            {
-                vec[counter[i]] = 1;
-            }
- 
-            // Test
-            *current = 0;
-            for(i=0; i < *permSize; i++)
-            {
-                permutation[i] = 0;
-            }
+                for(i=0; i < *dropSize; i++)
+                {
+                    vec[counter[i]] = 1;
+                }
+    
+                // Test
+                *current = 0;
+                for(i=0; i < *permSize; i++)
+                {
+                    permutation[i] = 0;
+                }
 
-            
-            cascades(    fC,
-                        sC,
-                        permutation,
-                        vec,
-                        numClass,
-                        numMod,
-                        numSol,
-                        permSize,
-                        current,
-                        solutionID,
-                        storage,
-                        skip);
-            
-            for(i=0; i < *dropSize; i++)
-            {
-                vec[counter[i]] = 0;
+                
+                cascades(    fC,
+                            sC,
+                            permutation,
+                            vec,
+                            numClass,
+                            numMod,
+                            numSol,
+                            permSize,
+                            current,
+                            solutionID,
+                            storage,
+                            skip);
+                
+                for(i=0; i < *dropSize; i++)
+                {
+                    vec[counter[i]] = 0;
+                }
+                
             }
-            
         }
     }
     
