@@ -41,7 +41,7 @@ tunePareto.occ <- function(base.classifier)
     ##################################################################
     ####
     #### Checks 
-    
+
     if ( missing(base.classifier))
         stop(errorStrings("classifierMissing"))
     

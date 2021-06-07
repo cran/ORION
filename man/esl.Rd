@@ -8,7 +8,7 @@
 An object of class \code{list} of length 2.
 }
 \source{
-\href{https://www.cs.waikato.ac.nz/ml/weka/datasets.html}{Weka dataset}
+\href{https://waikato.github.io/weka-wiki/datasets/}{Weka dataset}
 (datasets-arie_ben_david.tar.gz, 11,348 Bytes)
 }
 \usage{

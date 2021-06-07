@@ -1,4 +1,4 @@
-3f763bf6b210642734a40aabc2228e24 *DESCRIPTION
+d32a58f218d990b27af67a8134117ff8 *DESCRIPTION
 235edf18dcb86612152c2e54e6dc2ac2 *NAMESPACE
 bf9e08d5094fbe31ad5e98813a24d0e0 *NEWS.md
 284d42a2ba7f1d42b39dc7cb3a1f6f87 *R/as.edgedataframe.R
@@ -21,8 +21,8 @@ e90238101870e3e370ac6bf94383250d *R/dropSubsets.ordered.R
 993684d079911fd160607f52582205af *R/dropSupersets.unordered.R
 a9a0a6ee69db168cbf8fcc634ffd141f *R/dropThreshold.R
 f1f1fe96533e11ebd12fad645a870cf1 *R/errorStrings.R
-0877c6aa6fda2ca283ea0b054c311423 *R/esl-data.R
-57e401cee701d8086ae30fe193f8afbd *R/esl_org-data.R
+0d939e007ee50fde30f6da8d157d367b *R/esl-data.R
+ea4bcff52f5676f9d1325fbe2adac7d6 *R/esl_org-data.R
 8d4ce95b3dd58fa1cb6eabfa33ecc067 *R/eval.cascades.R
 6f9bc9aa64963ac900a0bdd0205fd9c8 *R/extract.classwise.sensitivities.R
 15ad735e7b880638af2955520dbe5ddd *R/gen.conf.R
@@ -50,13 +50,14 @@ aa7e583c68090079b1816bc5a79a6e48 *R/summary.R
 391e8ebe862de8c695a84d1aed282bcb *R/summaryGroupwise.R
 b56bf3855e13cabe3a3d752578e7421e *R/summarySubcascades.R
 5d4eb29a01e9a7765bb95bae979ba8d8 *R/train.tunePareto.occ.R
-0a6253b6ba17bb42a5203f105e405f8d *R/tunePareto.occ.R
-236d8609ac688b4969e30e8b49d4fd6a *build/vignette.rds
+5f58c893fecb85a0e8ac5409b3c6fc8a *R/tunePareto.occ.R
+ead415a92b8340757b1e55ba2018d8cb *build/vignette.rds
 0fd12746a1a8b46a9409b9667f220e7a *data/esl.RData
 1a53d9de30f9eb024016266108029d98 *data/esl_org.RData
+229658d53554e1c61ed3997bb6f2e23f *inst/NEWS.Rd
 a94456773b8b2680b9232969390dd5f4 *inst/doc/ORION.R
 8ab8ce648030c4139c8a12c5a080d6b1 *inst/doc/ORION.Rmd
-40f95417cf405c256e2395925541db10 *inst/doc/ORION.html
+277627e56bec509bbb6eeb7162614f8e *inst/doc/ORION.html
 526a48d91572f508e6a1f9dec426d065 *man/as.edgedataframe.Rd
 fe8a2a224ef31d0a5bb81a3fb357f3a7 *man/as.groupwise.Rd
 7c27f7f5821aa9e6341bdc2414051111 *man/as.subcascades.Rd
@@ -64,8 +65,8 @@ fe8a2a224ef31d0a5bb81a3fb357f3a7 *man/as.groupwise.Rd
 bbda29b1926c4d9a9a3117c10b78cba1 *man/dropSets.Rd
 aed66295947730549e331decdf4e3b0d *man/dropSize.Rd
 63e636fdea62a68d0ece3449628bbd8d *man/dropThreshold.Rd
-ce2706b6d06f7721adb95843028648d4 *man/esl.Rd
-3ce94f140e9bb7220fe2d4dc73a293f7 *man/esl_org.Rd
+d3f4b61a99a62f959ae5001740097ba2 *man/esl.Rd
+600d88418f0ee37803c6ed1003ed1dc5 *man/esl_org.Rd
 81e940ff8b74c42c26f07e7f4b3a2e5f *man/gen.conf.Rd
 e717e978fdb45553a25cd9b5c11eb829 *man/gen.predictionMap.Rd
 10ed486280311a9436b62ea9523859b1 *man/keepSets.Rd
