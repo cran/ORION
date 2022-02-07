@@ -8,12 +8,12 @@ keepSize(subcascades = NULL, size = NA)
 }
 \arguments{
 \item{subcascades}{A Subcascades object as it is returned by \code{\link{subcascades}}-function.
-The Subcascades object is made up of a list of matrices.
-Each matrix comprises the evaluation results of cascades of a specific length and
+The Subcascades object is made up of a list of matrices. 
+Each matrix comprises the evaluation results of cascades of a specific length and 
 is sorted row-wise according to the achieved minimal classwise sensitivities of the cascades (decreasing).
 The rownames show the class order by a character string of type '1>2>3' and the entries the sensitivity for each position of the cascade.}
 
-\item{size}{A numeric value that defines the size of the cascades that should be returned.
+\item{size}{A numeric value that defines the size of the cascades that should be returned. 
 The smallest size is 2 and the largest the maximal number of classes of the current dataset.}
 }
 \value{
@@ -32,15 +32,15 @@ foldList = generateCVRuns(labels  = labels,
                           nfold       = 2,
                           leaveOneOut = FALSE,
                           stratified  = TRUE)
-genMap = gen.predictionMap(data, labels, foldList = foldList, 
-classifier = tunePareto.svm(), kernel='linear')
+predMap = predictionMap(data, labels, foldList = foldList, 
+                       classifier = tunePareto.svm(), kernel='linear')
 # generate Subcascades object
-subcascades = subcascades(genMap,thresh=0.7)
+subc = subcascades(predMap,thresh=0.7)
 
 # filters for cascades that have a length of 3
-keepSize(subcascades,size=3)
+keepSize(subc,size=3)
 # filters for cascades that have a length of 3 or 4
-keepSize(subcascades, size=c(3,4))
+keepSize(subc, size=c(3,4))
 }
 \seealso{
 \code{\link{dropSize}}, \code{\link{dropSets}}, \code{\link{keepSets}}, \code{\link{dropThreshold}}, \code{\link{keepThreshold}}

@@ -8,23 +8,23 @@ dropThreshold(subcascades = NULL, comparison = ">=", thresh = 0)
 }
 \arguments{
 \item{subcascades}{A Subcascades object as it is returned by \code{\link{subcascades}}-function.
-The Subcascades object is made up of a list of matrices.
-Each matrix comprises the evaluation results of cascades of a specific length and
+The Subcascades object is made up of a list of matrices. 
+Each matrix comprises the evaluation results of cascades of a specific length and 
 is sorted row-wise according to the achieved minimal classwise sensitivities of the cascades (decreasing).
 The rownames show the class order by a character string of type '1>2>3' and the entries the sensitivity for each position of the cascade.}
 
 \item{comparison}{Defines the comparison type (<,>,<=,>=) for the threshold.}
 
 \item{thresh}{A numeric value between 0 and 1.
-The minimal sensitivity threshold used to filter the returned cascades.
-Only cascades that pass this threshold are returned.
+The minimal sensitivity threshold used to filter the returned cascades. 
+Only cascades that pass this threshold are returned. 
 If 0 is used the returned cascades are filtered for >0 and otherwise >= thresh.
 For low thresholds the calculation lasts longer.}
 }
 \value{
-A Subcascades object comprising the evaluated cascades and their performances.
-The Subcascades object is made up of a list of matrices.
-Each matrix comprises the evaluation results of cascades of a specific length and
+A Subcascades object comprising the evaluated cascades and their performances. 
+The Subcascades object is made up of a list of matrices. 
+Each matrix comprises the evaluation results of cascades of a specific length and 
 is sorted row-wise according to the achieved minimal classwise sensitivities of the cascades (decreasing).
 The rownames show the class order by a character string of type '1>2>3' and the entries the sensitivity for each position of the cascade.
 }
@@ -41,16 +41,16 @@ foldList = generateCVRuns(labels  = labels,
                           nfold       = 2,
                           leaveOneOut = FALSE,
                           stratified  = TRUE)
-genMap = gen.predictionMap(data, labels, foldList = foldList, 
-classifier = tunePareto.svm(), kernel='linear')
+predMap = predictionMap(data, labels, foldList = foldList, 
+                       classifier = tunePareto.svm(), kernel='linear')
 # generate Subcascades object
-subcascades = subcascades(genMap,thresh=0.5)
+subc = subcascades(predMap,thresh=0.5)
 
 # filters for cascades that 
 # 1. have a minimal classwise sensitivity >= 0.6
-dropThreshold(subcascades,thresh=0.6)
+dropThreshold(subc,thresh=0.6)
 # 2. have a minimal classwise sensitivity <= 0.6
-dropThreshold(subcascades, comparison = '<=', thresh=0.6)
+dropThreshold(subc, comparison = '<=', thresh=0.6)
 }
 \seealso{
 \code{\link{dropSize}}, \code{\link{keepSize}}, \code{\link{dropSets}}, \code{\link{keepSets}}, \code{\link{keepThreshold}}

@@ -4,22 +4,16 @@
 \alias{summary.Subcascades}
 \title{Summary Subcascades Characteristics}
 \usage{
-\method{summary}{Subcascades}(object = NULL, digits = 3, ...)
+\method{summary}{Subcascades}(object = NULL, includeClassSummary = TRUE, digits = 3, ...)
 }
 \arguments{
-\item{object}{A Subcascades object as it is returned by \code{\link{subcascades}}-function.
-The Subcascades object is made up of a list of matrices.
-Each matrix comprises the evaluation results of cascades of a specific length and
-is sorted row-wise according to the achieved minimal classwise sensitivities of the cascades (decreasing).
-The rownames show the class order by a character string of type '1>2>3' and the entries the sensitivity for each position of the cascade.}
+\item{object}{A Subcascades object as it is returned by \code{\link{subcascades}}-function.}
+
+\item{includeClassSummary}{Boolean indicating if the occurrence of classes by size should be included in the summary.}
 
 \item{digits}{Integer defining the number of decimal places as it is used in the \code{round}-function.}
 
 \item{...}{Further arguments passed from other methods.}
-}
-\value{
-An invisible Subcascades object as it is returned by \code{\link{subcascades}}-function.
-The function is called to print a summary of the Subcascades object to console.
 }
 \description{
 Generates a general overview of the characteristics of the Subcascades object.
@@ -37,14 +31,13 @@ foldList <- generateCVRuns(labels  = labels,
                           nfold       = 2,
                           leaveOneOut = FALSE,
                           stratified  = TRUE)
-genMap <- gen.predictionMap(data, labels, foldList = foldList, 
-classifier = tunePareto.svm(), kernel='linear')
+predMap <- predictionMap(data, labels, foldList = foldList, 
+                        classifier = tunePareto.svm(), kernel='linear')
 # generate Subcascades object
-subcascades <- subcascades(genMap,thresh=0.7,numSol=10000)
+subc <- subcascades(predMap,thresh=0.7,numSol=10000)
 
-summary(subcascades)
-
+summary(subc)
 }
 \seealso{
-\code{\link{subcascades}}, \code{\link{summarySubcascades}}, \code{\link{summaryGroupwise}}, \code{\link{summaryClasses}}
+\code{\link{subcascades}}, \code{\link{summary.PredictionMap}}, \code{\link{summary.Groupwise}}, \code{\link{summary.Conf}}, \code{\link{summary.ConfusionTable}}
 }

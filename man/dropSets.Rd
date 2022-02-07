@@ -15,15 +15,15 @@ dropSets(
 }
 \arguments{
 \item{subcascades}{A Subcascades object as it is returned by \code{\link{subcascades}}-function.
-The Subcascades object is made up of a list of matrices.
-Each matrix comprises the evaluation results of cascades of a specific length and
+The Subcascades object is made up of a list of matrices. 
+Each matrix comprises the evaluation results of cascades of a specific length and 
 is sorted row-wise according to the achieved minimal classwise sensitivities of the cascades (decreasing).
 The rownames show the class order by a character string of type '1>2>3' and the entries the sensitivity for each position of the cascade.}
 
-\item{sets}{Contains the set used for filtering. It is either a list of numberic vectors, a numeric vector,
-or a vector of characters representing a cascade of the following format '1>2>4'.}
+\item{sets}{Contains the set used for filtering. It is either a list of numeric vectors, a numeric vector, 
+or a vector of characters representing a cascade of the following format '1>2>4'. Empty vectors are not allowed.}
 
-\item{direction}{Either 'sub','super' or 'exact', indicating whether the subset, the superset or the exact set is filtered.
+\item{direction}{Either 'sub','super' or 'exact', indicating whether the subset, the superset or the exact set is filtered. 
 The 'exact' case filters exactly the cascades defined in \code{sets}. Please refer to the details section for a detailed description.}
 
 \item{ordered}{Either TRUE or FALSE indicating whether the order of the classes in sets is considered or not.}
@@ -34,9 +34,9 @@ The 'exact' case filters exactly the cascades defined in \code{sets}. Please ref
 fit to at least one of the sets ('any') or to all of the given sets ('all').}
 }
 \value{
-A Subcascades object comprising the evaluated cascades and their performances.
-The Subcascades object is made up of a list of matrices.
-Each matrix comprises the evaluation results of cascades of a specific length and
+A Subcascades object comprising the evaluated cascades and their performances. 
+The Subcascades object is made up of a list of matrices. 
+Each matrix comprises the evaluation results of cascades of a specific length and 
 is sorted row-wise according to the achieved minimal classwise sensitivities of the cascades (decreasing).
 The rownames show the class order by a character string of type '1>2>3' and the entries the sensitivity for each position of the cascade.
 }
@@ -44,25 +44,24 @@ The rownames show the class order by a character string of type '1>2>3' and the 
 \code{dropSets} filters out specific cascade sets.
 }
 \details{
-This function allows for filtering the Subcascades object.
+This function allows for filtering the Subcascades object. 
 
 If \code{direction} is set to 'exact' the parameter \code{neighborhood} is ignored and the parameter \code{type} is used as its default and cannot be changed.
-There has to be an exact match between the classes of the sets parameter cascades and the cascade of the Subcascades object,
-so not more but also not less classes are allowed. If the \code{ordered} parameter is set to TRUE also the order of the classes within the
+There has to be an exact match between the classes of the sets parameter cascades and the cascade of the Subcascades object, 
+so not more but also not less classes are allowed. If the \code{ordered} parameter is set to TRUE also the order of the classes within the 
 \code{sets} parameter and within the Subcascades object has be be exactly the same.
 
-If \code{direction} is set to 'sub' the Subcascades object is filtered for subsets of the given cascades.
+If \code{direction} is set to 'sub' the Subcascades object is filtered for subsets of the given cascades. 
 If the \code{type} parameter is set to 'any' each cascade is considered individually otherwise all cascades are used as reference for filtering.
-This means that either for each cascade of the \code{sets} parameter individually or for taking all together the Subcascades object is filtered for cascades that are
-made up of the same classes, a subset of classes (\code{ordered = FALSE}) or a cascade, part of a cascade (\code{ordered = TRUE}),
+This means that either for each cascade of the \code{sets} parameter individually or for taking all together the Subcascades object is filtered for cascades that are 
+made up of the same classes, a subset of classes (\code{ordered = FALSE}) or a cascade, part of a cascade (\code{ordered = TRUE}), 
 resulting in a set of cascades that might contain less classes.
-Depending on the parameter \code{neighborhood} each class has to have the same direct neighbors as in the \code{sets} parameter defined ('direct').
-If \code{neighborhood} is set to 'indirect' the filtering is less strict and the direct neighborhood defined in \code{sets} is not considered.
+The parameter \code{neighbourhood} is not considered.
 
-If \code{direction} is set to 'super' the Subcascades object is filtered for a superset of the given cascades.
+If \code{direction} is set to 'super' the Subcascades object is filtered for a superset of the given cascades. 
 If the \code{type} parameter is set to 'any' each cascade is considered individually otherwise all cascades are used as reference for filtering.
-A superset are cascades that are made up of (parts) of the given cascades (\code{ordered = TRUE}) or classes (\code{ordered=FALSE}) but can contain also more classes.
-Depending on the parameter \code{neighborhood} each class has to have the same direct neighbors as in the \code{sets} parameter defined ('direct').
+A superset are cascades that are made up of (parts) of the given cascades (\code{ordered = TRUE}) or classes (\code{ordered=FALSE}) but can contain also more classes. 
+Depending on the parameter \code{neighborhood} only classes defined in the \code{sets} parameter are allowed as neighbors ('direct').
 If \code{neighborhood} is set to 'indirect' the filtering is less strict and the direct neighborhood defined in \code{sets} is not considered.
 }
 \examples{
@@ -75,10 +74,10 @@ foldList = generateCVRuns(labels  = labels,
                           nfold       = 2,
                           leaveOneOut = FALSE,
                           stratified  = TRUE)
-genMap = gen.predictionMap(data, labels, foldList = foldList, 
-classifier = tunePareto.svm(), kernel='linear')
+predMap = predictionMap(data, labels, foldList = foldList, 
+                       classifier = tunePareto.svm(), kernel='linear')
 # generate Subcascades object
-subcascades = subcascades(genMap,thresh=0.7)
+subc = subcascades(predMap,thresh=0.7)
 
 #define sets
 set1 = list(c(1,2,3),c(2,3,4))
@@ -86,33 +85,33 @@ set2 = c('1>2>3','2>3>4')
 
 # filter for the subset cascades that contain either the classes 
 # {1,2,3} or {2,3,4} independent of the order, but neighbored
-dropSets(subcascades, sets = set1, direction = 'sub', 
+dropSets(subc, sets = set1, direction = 'sub', 
          ordered = FALSE, neighborhood = 'direct')
-dropSets(subcascades, sets = set2, direction = 'sub', 
+dropSets(subc, sets = set2, direction = 'sub', 
          ordered = FALSE, neighborhood = 'direct')
 
 # filter for the superset cascades that contain either the classes 
 # {1,2,3} or {2,3,4} independent of the order, but neighbored
-dropSets(subcascades, sets = set1, direction = 'super', 
+dropSets(subc, sets = set1, direction = 'super', 
          ordered = FALSE, neighborhood = 'direct')
-dropSets(subcascades, sets = set2, direction = 'super', 
+dropSets(subc, sets = set2, direction = 'super', 
          ordered = FALSE, neighborhood = 'direct')
 
 # filter for the superset cascades that contain both the classes 
 # {1,2,3} and {2,3,4} in exactly the given order, but allowing 
 # for other classes inbetween
-dropSets(subcascades, sets = set1, direction = 'super', 
+dropSets(subc, sets = set1, direction = 'super', 
         ordered = TRUE, neighborhood = 'indirect', type = 'all')
-dropSets(subcascades, sets = set2, direction = 'super',
+dropSets(subc, sets = set2, direction = 'super',
         ordered = TRUE, neighborhood = 'indirect', type = 'all')
          
 # filter for the exact cascades
 # sets can be a numeric list
-result <- dropSets(subcascades, list(c(0,1,2),c(2,3,4,1)),
+result <- dropSets(subc, list(c(0,1,2),c(2,3,4,1)),
                    direction = 'exact', ordered=TRUE)
 unlist(t(lapply(result,rownames)))
 # or sets can be a character vector
-result <- dropSets(subcascades, c('0>1>2','2>3>4>1'),
+result <- dropSets(subc, c('0>1>2','2>3>4>1'),
                    direction = 'exact',ordered=TRUE)
 unlist(t(lapply(result,rownames)))         
 }

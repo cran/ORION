@@ -1,6 +1,6 @@
 ---
 title: ORION Package Vignette
-author: 'LM Schäfer, L Lausser, HA Kestler'
+author: 'LM Schäfer, R Szekely, L Lausser, HA Kestler'
 date: '`r Sys.Date()`'
 output: rmarkdown::html_vignette
 vignette: >
@@ -34,7 +34,7 @@ Overall, *ORION* allows for:
 
 The underlying algorithm is an extended version of the CASCADES algorithm published in L Lausser\*, LM Schäfer\*, LR Schirra\*, R Szekely, F Schmid, and HA Kestler, Assessing phenotype order in molecular data. Sci Rep 9, 1-10 (2019) \*equal contribution.
 
-Potential ordinal relations are identified in cross-validation experiments with ordinal classifier cascades. Cascades are in general prone to incorrect assumptions on the class order. Those, which pass a threshold on the minimal class-wise sensitivity, are seen as potential candidates. *ORION* allows cascades of any type of binary classifier. 
+Potential ordinal relations are identified in cross-validation or reclassification experiments with ordinal classifier cascades. Cascades are in general prone to incorrect assumptions on the class order. Those, which pass a threshold on the minimal class-wise sensitivity, are seen as potential candidates. *ORION* allows cascades of any type of binary classifier. 
 
 ## Notation
 A cascade is written as a character string. The relation between the class labels is given as '>'. For example, the cascade denoted as '1>2>3' indicates that 1 is neighbored by class 2, which itself is neighbored by 3. The class labels are sequential numeric values from 0 to (N-1), for N classes.
@@ -42,7 +42,7 @@ A cascade is written as a character string. The relation between the class label
 ## Class overview
 
 * `PredictionMap`:  
-It is made up of two elements (*\$pred*, *\$meta*). The meta information element which connects the values in the *\$pred*-matrix to a specific fold, run and contains the original label. The folds and runs are encoded as sequential numeric values starting at 1. The rownames of the *\$pred*-matrix show the classes of the binary base classifier. The elements are the prediction result of a specific training. The rows that correspond to base classifiers that would separate the same class consists of -1. Those rows are not used within the analysis.
+It is made up of two elements (*\$pred*, *\$meta*). The meta information element which connects the values in the *\$pred*-matrix to a specific fold, run, sample and contains the original label. The folds and runs are encoded as sequential numeric values starting at 1. The rownames of the *\$pred*-matrix show the classes of the binary base classifier. The elements are the prediction result of a specific training. The rows that correspond to base classifiers that would separate the same class consists of -1. Those rows are not used within the analysis.
 * `Subcascades`:  
 The *Subcascades* object is made up of a list of matrices. Each matrix comprises the evaluation results of cascades of a specific length. The rownames show the class order and the entries the sensitivity for each position of the cascade.
 * `Groupwise`:  
@@ -51,15 +51,17 @@ It is a two-leveled list. The first level collects cascades of the same size. Th
 * `Conf`:   
 The *Conf* object contains all class sensitivities for each binary trained classifiers. The *\$fC*-part is a column-vector and contains the sensitivities for the first class of each pairwise classifier. The rows stand for the pairwise classifiers, whereby '0vs1' means that this classifier was trained for class 0 against class 1, with 
 class 0 being the first class. The number '-1' is used as placeholder. The *\$sC*-part is a matrix and contains the preformance measures for all second classes, which are meant here as all classes except the first class. The rows correspond to the binary classifiers and the columns to the classes. Furthermore the foldlist (*\$foldList*) used and the dataset name (*\$dataName*) are saved as variable of the object.
-
+* `ConfusionTable`:   
+The *ConfusionTable* object contains all conditional prediction rates organised as an extended confusion table. An additional *cascade* parameter has to be provided, for which the confusion table is calculated.
 
 ## Function overview
 
 *ORION* provides basic functions to search for general ordinal (sub)cascades and the reflection of class orders in labelled data as well as a *TunePareto* wrapper for the classifier of the ordinal classifier cascade.
 
-* `gen.predictionMap()` 
+* `predictionMap()` 
 * `subcascades()` 
-* `gen.conf()` 
+* `conf()`
+* `confusionTable()`
 * `tunePareto.occ()` 
 
 Additionally, there are several functions that help summarizing and getting an overview of the results.
@@ -71,22 +73,33 @@ Additionally, there are several functions that help summarizing and getting an o
     * `keepSizes()`
     * `keepThreshold()`
     * `keepSets()`
-
-2. Summary 
-    * `summarySubcascades()`
-    * `summaryClasswise()`
-    * `summarySubcascades()`
-
-3. Transformation
-    * `as.groupwise()`
+    
+2. Transformation
+    * `groupwise()`
     * `as.subcascades()`
+    * `mergeSubcascades()`
     * `as.edgedataframe()`
+
+3. Summary (S3methods)
+    * `summary.Subcascades()`
+    * `summary.PredictionMap()`
+    * `summary.Conf()`
+    * `summary.ConfusionTable()`
+    * `summary.Groupwise()`
     
 4. Plotting (S3methods)
     * `plot.Subcascades()`
+    * `plot.Groupwise()`
     * `plot.ConfusionTable()`
     * `plot.Conf()`
+    * `plot.PredictionMap()`
 
+5. Printing (S3methods)
+    * `print.Subcascades()`
+    * `print.Groupwise()`
+    * `print.ConfusionTable()`
+    * `print.Conf()`
+    * `print.PredictionMap()`
 
 
 # Example
@@ -129,9 +142,9 @@ data = esl_org[,1:4]
 The data matrix with features as columns and samples as rows and the label vector are the input for the cascades analysis.
 
 ### Applying the cascade algorithm
-We want to search for (sub)cascades by performing 10x10 cross-validation experiments based on binary linear support vector machines.
+We want to search for (sub)cascades by performing 10x10 cross-validation experiments based on binary linear support vector machines. If reclassification is to be performed generating a fold list is skipped and the parameter is used as its default (\code{NULL}).
 
-The first step within the analysis is the generation of a fold list. This is done using the *generateCVRuns* command from the *TunePareto* package.
+The first step within the analysis is the generation of a fold list. This is done using the *generateCVRuns* command from the *TunePareto* package. 
 ```{r}
 #generate a fold list
 library(TunePareto)
@@ -146,38 +159,41 @@ Within the next step the object of type *PredictionMap* is generated as basis fo
 
 ```{r}
 #generate the predicition map
-genMap = gen.predictionMap(data, labels, foldList = foldList, 
+predMap = predictionMap(data, labels, foldList = foldList, 
                             classifier = tunePareto.svm(), kernel='linear')
 ```
 The printed output shows that there is an additional packages loaded. The *e1071* package is loaded as the *tunePareto.svm()* function uses that package. If *parallel* is defined as *TRUE* a parallel evaluation is performed using the *doParallel*-package. 
 
-The predicition map is made up of two different elements.
+The predicition map is made up of four different elements.
 ```{r}
-names(genMap)
+names(predMap)
 ```
 
-Both elements are matrices.
+The meta and pred elements are matrices.
 We can look at specific elements column 1, 11, 21 of the meta element.
 ```{r}
-genMap$meta[,c(1,11,21)]
+predMap$meta[,c(1,11,21)]
 ```
-The meta information shows that those columns correspond to the first run of fold 1, 2 and 4 and the analysed samples belong the class 0.
+The meta information shows that those columns correspond to the first run of fold 1, 2 and 4 and the analysed samples, that have the ID 6, 37 and 5, belong to class 0.
 
 We can now check the first five rows of the corresponding prediction element 
 ```{r}
-genMap$pred[1:5,c(1,11,21)]
+predMap$pred[1:5,c(1,11,21)]
 ```
 The rownames of this matrix show the classes of the binary base classifier. The elements are the prediction result of a specific training.
 The rows that correspond to base classifiers that would separate the same class consists of -1. Those rows are not used within the analysis.
 
 Furthermore, in this example we can see that, in fold 1 and 2 of the first run, 0 is predicted for the given sample using the base classifiers 0 vs. 1, 0 vs. 2, 0 vs. 3 and 0 vs. 4. This means that for those cases the base classifier has classified the sample as its first class. In contrast to that the sample is classified as the base classifiers second class in fold 4 of the first run, as this is class 1 for 0 vs.1 and 2 for 0 vs. 2 the values are 1 and 2.
 
+The parameter *printParams* is a list of parameters that is used for printing, such as the dimensionality of the data, the length of the labels vector, information about the fold list and if the *PredictionMap* was created in parallel. The parameter *printClassifierParams* is a vector comprising basic information about the utilized *TunePareto* classifier and its parameters.
 
 We can search for all subcascades that have a minimal class-wise sensitivity higher than a given threshold, like 0.6. It is also possible to search only for subcascades of a given cascade size. If the parameters are not set the default values are all subcascades from maximal length to a length of 2 that pass a threshold of 0.
+
+Printing a *Subcascades* object can additionally be provided with the parameter numeric *printSizes*. This number corresponds to the largest cascade sizes that should be printed.
 ```{r}
 #analyse the subcascades
-subcascades = subcascades(genMap, thresh=0.6)
-print(subcascades, max = 10)
+subcascades = subcascades(predMap, thresh=0.6)
+print(subcascades, printSizes = 2) 
 ```
 
 To get the model of one of these cascades or to test in advance the classification performance of a specific class order the package provides a *TunePareto* wrapper for an ordinal classifier cascade. This model can be used to evaluate the decision boundaries, to calculate the performance of one specific class order or it can be applied to classify new unknown samples.
@@ -197,12 +213,22 @@ prediction <- predict(object = model, newdata = data)
 sensitivites = table(prediction[prediction==labels])/table(labels)
 ```
 
+Additionally, it is possible to merge two *Subcascades* objects with the method *mergeSubcascades()*. Here, the second subcascades are added to the first object that have not been part of the first ones.
+
+``` {r}
+# make two Subcascades objects
+subcascades1 = subcascades(predMap, size = c(3,4), thresh = 0.6)
+subcascades2 = subcascades(predMap, size = c(4), thresh = 0.5)
+# add the cascades of subcascades2 to subcascades1
+mergeSubcascades(subcascades1, subcascades2)
+```
+
 ## Analyze the results
 
 ### Overviews
-A general summary of the subcascades characteristics show that there are 60 cascades returned, which means that the threshold of 0.6 has already sorted out 260 out of the 320 possibilities. The 60 cascades are distributed over all lengths. 2 cascades have the maximal length of 5 and as 20 cascades of length 2 are found we know that all pairwise cascades were returned. This part of the summary can also solely be calculated by *summarySubcascades(subcascades)*. 
-Looking at the occurence by classes and size (also possible by *summaryClasses(subcascades)*) it can be seen that class 2 is underrepresented within the cascades of length 3 and 4. 
-As longer cascades are less likely to occure by chance and hence are of a specific interest also their performances are given in this summary.
+A general summary of the subcascades characteristics show that there are 60 cascades returned, which means that the threshold of 0.6 has already sorted out 260 out of the 320 possibilities. The 60 cascades are distributed over all lengths. 2 cascades have the maximal length of 5 and as 20 cascades of length 2 are found we know that all pairwise cascades were returned. The S3method *summary.Subcascades()* summarizes all this information.
+The boolean parameter *includeClassSummary* can be used to include the occurance of classes in the summary. This additional information reveals that class 2 is underrepresented within the cascades of length 3 and 4. As longer cascades are less likely to occure by chance and hence are of a specific interest also their performances are given in this summary.
+
 ```{r}
 summary(subcascades)
 ```
@@ -211,22 +237,22 @@ As the given dataset comprises scores we expected the order '0>1>2>3>4' to be re
 
 Before we analyse whether also the found subcascades are of the expected order, we look into the class subgroup characteristics.
 
-To analyze whether there are specific class subgroups that are only found in one or two directions the function  *summaryGroupwise* counts how many permutations of one subgroup are found.  
+To go into more detail about those subgroups consisting of the same classes one can have a look in the corresponding orders and their sensitivity performance measure.
+```{r}
+groupwise <- groupwise(subcascades)
+groupwise$size.4
+```
+This lets us determine that the one group occurring with 4 different permutations consists of class 0, 1, 3 and 4. One might hypothesize that for this group 4 permutations are possible because of class 2 separating (0,1) and (3,4). Also the observation that within all 4 permutations class 0 and 1 are on one side and 3 and 4 on the other supports the hypothesis that there is a broader separation between 0,1 and 3,4.
+
+To analyze whether there are specific class subgroups that are only found in one or two directions the function  *summary.Groupwise* counts how many permutations of one subgroup are found.  
 
 ```{r}
-mat <- summaryGroupwise(subcascades)
-mat
+groupwise <- groupwise(subcascades)
+summary(groupwise)
 ```
 As there are 2 cascades of length 5 corresponding to the forward and backward direction, there is one group of classes of which two permutations are found. For cascades of length 2 one can see that there are 10 groups, corresponding of the number of pairwise combinations, and all of them are found in 2 different ways. For cascades of length 3 and 4 one can see that there are 10 and 5 group of classes, respectively. 
 
 As there is one subgroup found which is reflected in 4 different orders we might ask which classes correspond to this group.
-
-To go into more detail about those subgroups consisting of the same classes one can have a look in the corresponding orders and their sensitivity performance measure.
-```{r}
-groupwise <- as.groupwise(subcascades)
-groupwise$size.4
-```
-This lets us determine that the one group occurring with 4 different permutations consists of class 0, 1, 3 and 4. One might hypothesize that for this group 4 permutations are possible because of class 2 separating (0,1) and (3,4). Also the observation that within all 4 permutations class 0 and 1 are on one side and 3 and 4 on the other supports the hypothesis that there is a broader separation between 0,1 and 3,4.
 
 The notation per subgroup can be reverted resulting in the original *Subcascades* object.
 ```{r}
@@ -337,7 +363,7 @@ The longest that do not show the given three class patterns contain the classes 
 
 Furthermore, it might be of interest to check the classification result of the classes that are not part of the cascade. As an example we take the cascade 0>1>3>4 and ask to which class the samples of class 2 are allocated.
 ```{r}
-result.neighbourhood = confusion.table(genMap, cascade = '0>1>3>4', 
+result.neighbourhood = confusionTable(predMap, cascade = '0>1>3>4', 
                                         other.classes='all', sort = TRUE)
 result.neighbourhood
 ```
@@ -345,18 +371,34 @@ One can observe that the samples of class 2 split between class 1 and 3 and henc
 
 ## Visualize the results
 
-There are plot-functions for the *Subcascades*, the *ConfusionTable* and the *Conf*-object implemented.
+There are plot-functions for the *PredictionMap*, *Subcascades*, *Groupwise*, the *ConfusionTable* and the *Conf*-object implemented.
 The cascades themselves can be exported to the *igraph* package.
+
+### PredictionMap
+The predictions of the specified *TunePareto* classifier can be visualized in a heatmap. The rows correspond to all possible binary base classifiers provided in the *PredictionMap* object. The columns correspond to all samples in either reclassification or cross-validation experiments (as specified in the call of *predictionMap()*). The top row shows the different unique labels in different colors, which can be provided via the *label.colors* parameter manually. 
+
+```{r  fig.width=7, fig.asp = 0.8, fig.align = 'center', strip.white=TRUE,echo = TRUE }
+#generate the predicition map in a reclassification experiment
+predMap = predictionMap(data, labels, foldList = NULL, 
+                            classifier = tunePareto.svm(), kernel='linear')
+plot(predMap, plot.sampleIDs=FALSE, 
+     label.colors=c('#7fc97f','#beaed4','#fdc086','#ffff99','#386cb0'))
+```
 
 ### Subcascades
 The plot of the *Subcascades* object gives a visual overview of the cascades. The rows correspond to the cascades (if there are many cascades within the *Subcascades* object it is recommended to preselect first), the columns correspond to the classes. Here, the cascades of size 4 and 5 are plotted. The classes on the x-axis are sorted based on the first element in the *Subcascades* object, which is in this case the longest one with the best performance. It can be seen that as soon as class 1 is part of the cascade class 0 reaches only 0.64 percent. Similar behaviour can be observed for classes 4 and 3: class 4 is better classified if class 3 is not included in the cascade. The gaps highlight that all 5 candidate cascades of size 4 are present with both directions. And the plot shows that the class-wise sensitivities for the single classes in the forward and backward direction are always the same within this example, with the exception of the cascades composed ofthe classes 0,1,3,4. Here, a symmetry break can be observed.
 ```{r  fig.width=5, fig.height=6, fig.align = 'center', strip.white=TRUE,echo = TRUE }
 subcascades = dropSize(subcascades,c(2,3))
-plot(subcascades,row.sort = 'max',digits=2,thresh = 0.6)
+plot(subcascades,row.sort = 'max',digits=2)
+```
+
+### Groupwise
+Analogous to the *Subcascades* object, plotting of a *Groupwise* object gives a visual overview of the cascades with cascades in rows and classes in columns. Internally, the *Groupwise* object is converted into a *Subcascades* object and *plot.Subcascades* is then called.
+```{r fig.show='hide', results = FALSE}
+plot(groupwise)
 ```
 
 ### ConfusionTable
-
 The neighbourhood analysis is shown using the plot function for a *ConfusionTable*-object. This plot nicely shows the predicted class distribution per class label. One can observe that the samples of class 1 are partly classified as class 0 and 2. 
 ```{r  fig.width=5, fig.asp = 0.7, fig.align = 'center', strip.white=TRUE,echo = FALSE }
 plot(result.neighbourhood, digits=2)
@@ -365,10 +407,10 @@ plot(result.neighbourhood, digits=2)
 ### Conf
 The visual analysis of the base classifier performance shows that the binary classifiers perfom better for not-neigbored classes and the worst for separating class 0 and 1.
 ```{r}
-base.classifier = gen.conf(genMap)
+base.classifier = conf(predMap)
 ```
 ```{r  fig.width=5, fig.asp = 0.9, fig.align = 'center', strip.white=TRUE,echo = FALSE }
-plot(base.classifier, digits=2,symmetric=TRUE, na.color = 'white')
+plot(base.classifier, onlySens=TRUE , digits=2,symmetric=TRUE, na.color = 'white')
 ```
 
 ### Graph

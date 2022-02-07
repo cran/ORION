@@ -1,33 +1,40 @@
 useDynLib(ORION, .registration = TRUE)
 
 import("e1071", "randomForest", "TunePareto","knitr","rmarkdown","doParallel", "igraph", "foreach")
-importFrom("utils", "sessionInfo")
+importFrom("utils", "sessionInfo", "capture.output")
 importFrom("stats", "predict")
-importFrom("grDevices", "colorRampPalette")
-importFrom("graphics", "abline", "axis", "mtext", "par", "plot","polygon", "rect", "strwidth", "text")
+importFrom("grDevices", "colorRampPalette", "rainbow")
+importFrom("graphics", "abline", "axis", "mtext", "par", "plot","plot.default","polygon", "rect", "strwidth", "text")
 
+S3method(summary, PredictionMap)
+S3method(summary, Conf)
+S3method(summary, ConfusionTable)
 S3method(summary, Subcascades)
+S3method(summary, Groupwise)
+S3method(plot, PredictionMap)
 S3method(plot, ConfusionTable)
 S3method(plot, Conf)
 S3method(plot, Subcascades)
+S3method(plot, Groupwise)
+S3method(print, PredictionMap)
+S3method(print, Subcascades)
+S3method(print, Conf)
+S3method(print, ConfusionTable)
+S3method(print, Groupwise)
 
 export(
 	subcascades,
-	gen.conf,
-	gen.predictionMap,
-	confusion.table,
+	conf,
+	predictionMap,
+	groupwise,
+	confusionTable,
 	dropSize,
 	dropThreshold,
 	dropSets,
 	keepSize,
 	keepThreshold,
 	keepSets,
-	plot.ConfusionTable,
 	mergeSubcascades,
-	summaryGroupwise,
-	summaryClasses,
-	summarySubcascades,
-	as.groupwise,
 	as.subcascades,
 	as.edgedataframe,
 	tunePareto.occ

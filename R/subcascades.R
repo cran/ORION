@@ -5,9 +5,9 @@
 #' @inheritParams keepSets
 #' 
 #' @param predictionMap 
-#' A PredictionMap object as it is returned by \code{\link{gen.predictionMap}}-function. 
-#' It is made up of two elements(pred and meta).
-#' The rownames of the pred-matrix (e.g. \[0vs1\]) show the classes of the binary base classifier. The elements are the prediction result of a specific training.
+#' A PredictionMap object as it is returned by \code{\link{predictionMap}}-function. 
+#' It is made up of a list of two matrices(pred and meta). Both matrices provide information on individual samples column-wise.
+#' The rownames of the pred-matrix (e.g. [0vs1]) show the classes of the binary base classifier. The elements are the prediction result of a specific training.
 #' The rows that correspond to base classifiers that would separate the same class consists of -1. Those rows are not used within the analysis.
 #' The meta information connects the values in the pred-matrix to a specific fold, run and contains the original label.
 #' 
@@ -37,7 +37,7 @@
 #' is sorted row-wise according to the achieved minimal classwise sensitivities of the cascades (decreasing).
 #' The rownames show the class order by a character string of type '1>2>3' and the entries the sensitivity for each position of the cascade.
 #' 
-#' @seealso \code{\link{plot.Subcascades}}, \code{\link{summarySubcascades}}
+#' @seealso \code{\link{print.Subcascades}}, \code{\link{plot.Subcascades}}, \code{\link{summary.Subcascades}}
 #' 
 #' @examples 
 #' library(TunePareto)
@@ -49,22 +49,20 @@
 #'                           nfold       = 2,
 #'                           leaveOneOut = FALSE,
 #'                           stratified  = TRUE)
-#' genMap = gen.predictionMap(data, labels, foldList = foldList, 
-#' classifier = tunePareto.svm(),  kernel='linear')
+#' predMap = predictionMap(data, labels, foldList = foldList, 
+#'                        classifier = tunePareto.svm(),  kernel='linear')
 #' 
 #' # use default parameter settings 
 #' # -> returns cascades of all lengths that show a minimal classwise sensitivity >0.
-#' subcascades = subcascades(genMap)
+#' subc = subcascades(predMap)
 #' # change the threshold 
 #' # -> returns cascades of all lengths that show a minimal classwise sensitivity >=0.6.
-#' subcascades = subcascades(genMap, thresh=0.6)
+#' subc = subcascades(predMap, thresh=0.6)
 #' # search only for cascades of length 2 and 4 
 #' # -> returns cascades of length 2 and 4 that show a minimal classwise sensitivity >=0.6.
-#' subcascades = subcascades(genMap, thresh=0.6, size=c(2,4))
+#' subc = subcascades(predMap, thresh=0.6, size=c(2,4))
 #' # evaluates the performance of the cascade '0>1>2>3>4'.
-#' subcascades = subcascades(genMap, sets = c('0>1>2>3>4'))
-
-
+#' subc = subcascades(predMap, sets = c('0>1>2>3>4'))
 subcascades<- function(predictionMap=NULL, sets = NULL, thresh=0, size=NA, numSol=1000)
 {
     #################################################
@@ -151,7 +149,7 @@ subcascades<- function(predictionMap=NULL, sets = NULL, thresh=0, size=NA, numSo
 
     #################################################
 
-    conf      <- gen.conf(predictionMap)
+    conf      <- conf(predictionMap)
     
     if (!is.null(sets)){#sets
       set.sizes = sapply(sets,length)
@@ -199,8 +197,168 @@ subcascades<- function(predictionMap=NULL, sets = NULL, thresh=0, size=NA, numSo
     {
         return(NULL)
     }else{
-        class(subc) <- 'Subcascades'
-        return(subc)
+        structure(subc,class = "Subcascades")
     }
 }
 
+#' Merge Subcascades
+#' 
+#' \code{mergeSubcascades} adds the cascades from subcascades2 to the subcascades1, that have not been part of subcascades1.
+#' 
+#' @param subcascades1
+#' A Subcascades object as it is returned by \code{\link{subcascades}}-function.
+#' The Subcascades object is made up of a list of matrices. 
+#' Each matrix comprises the evaluation results of cascades of a specific length. 
+#' The rownames show the class order and the entries the sensitivity for each position of the cascade.
+#' @param subcascades2
+#' A Subcascades object like subcascades1
+#' 
+#' @inherit subcascades return
+#' 
+#' @examples 
+#' library(TunePareto)
+#' data(esl)
+#' data = esl$data
+#' labels = esl$labels
+#' foldList = generateCVRuns(labels  = labels,
+#'                           ntimes      = 2,
+#'                           nfold       = 2,
+#'                           leaveOneOut = FALSE,
+#'                           stratified  = TRUE)
+#' predMap = predictionMap(data, labels, foldList = foldList, 
+#'                        classifier = tunePareto.svm(), kernel='linear')
+#' 
+#' # make two Subcascades objects
+#' subc1 = subcascades(predMap, size = c(3,4), thresh = 0.6)
+#' subc2 = subcascades(predMap, size = c(4), thresh = 0.5)
+#' # add the cascades of subcascades2 to subcascades1
+#' mergeSubcascades(subc1, subc2)
+mergeSubcascades <- function(subcascades1=NULL, subcascades2=NULL){
+  #################################################
+  ##
+  ## Check parameter 'subcascades1'
+  
+  if(!is.null(subcascades1) & !inherits(subcascades1, 'Subcascades'))
+    stop(errorStrings('subcascades1'))
+  
+  #################################################
+  ##
+  ## Check parameter 'subcascades2'
+  
+  if(!is.null(subcascades2) & !inherits(subcascades2, 'Subcascades'))
+    stop(errorStrings('subcascades2'))
+  
+  #################################################
+  
+  if(!is.null(subcascades1))
+    subcascades1 <- subcascades1[sapply(subcascades1, function(x){!is.null(x)})]
+  
+  if(!is.null(subcascades2))
+    subcascades2 <- subcascades2[sapply(subcascades2, function(x){!is.null(x)})]
+  
+  if(length(subcascades1)!=0)
+  {
+    result = subcascades1
+    
+    if(length(subcascades2)!=0)
+    {
+      for (size in names(subcascades2)){
+        if (size %in% names(result)){
+          add.casc = !(rownames(subcascades2[[size]]) %in% rownames(result[[size]]))
+          result[[size]] = rbind(result[[size]],subcascades2[[size]][add.casc,])
+          Smin = apply(result[[size]],1,min)
+          result[[size]][order(Smin,decreasing=T),]
+        } else {
+          result[[size]] = subcascades2[[size]]
+        }
+      }
+      
+      size.as.numeric <- as.numeric(sapply(names(result), function(x){strsplit(x,'.',fixed = TRUE)[[1]][2]}))
+      result = result[order(size.as.numeric,decreasing = T)]
+    }
+  }else{
+    result = subcascades2
+  }
+  
+  structure(result,class='Subcascades')
+}
+
+#' Coerce to a Subcascades Object 
+#' 
+#' Converts from a Groupwise object to a Subcascades object.
+#' 
+#' @param groupwise
+#' A Groupwise object, which comprises a two-leveled list. The first level collects cascades of the same size.
+#' The second level contains a list of unique class combinations, labelled as a character string with '-' separating the different classes. 
+#' For each unique set of class combinations the corresponding orders and their performance are given as a matrix, 
+#' where each row contains a cascade, given as a character string of type '1>2>3', and the columns the sensitivity for the class at the corresponding position.
+#' Each matrix is sorted row-wise according to the achieved minimal classwise sensitivites of the cascades (decreasing).
+#' 
+#' @details 
+#' Converts a Groupwise object to a Subcascades object.
+#' 
+#' @inherit subcascades return
+#' 
+#' @seealso \code{\link{groupwise}}, \code{\link{as.edgedataframe}}
+#' 
+#' @examples 
+#' library(TunePareto)
+#' data(esl)
+#' data = esl$data
+#' labels = esl$labels
+#' foldList = generateCVRuns(labels  = labels,
+#'                           ntimes      = 2,
+#'                           nfold       = 2,
+#'                           leaveOneOut = FALSE,
+#'                           stratified  = TRUE)
+#' predMap = predictionMap(data, labels, foldList = foldList, 
+#'                        classifier = tunePareto.svm(), kernel='linear')
+#' 
+#' # generate a Groupwise object
+#' subc = subcascades(predMap,thresh=0.7)
+#' groupwise = groupwise(subc)
+#' 
+#' #convert it to a Subcascades object
+#' converted.subcascades = as.subcascades(groupwise)
+as.subcascades <- function(groupwise=NULL)
+{
+  #################################################
+  ##
+  ## Check parameter 'groupwise'
+  
+  if(is.null(groupwise))
+    return(NULL)
+  
+  if(!inherits(groupwise, 'Groupwise'))
+    stop(errorStrings('groupwise'))
+  
+  #################################################
+  
+  groupwise <- groupwise$groupings
+  groupwise <- groupwise[sapply(groupwise, function(x){!is.null(x)})]
+  
+  subcascades <- lapply(groupwise, function(size){
+    casc <- do.call('rbind', size)
+    min.sens <- sort(apply(casc,1,min), decreasing=TRUE)
+    return(casc[names(min.sens),,drop = FALSE])
+  })
+  
+  if(length(subcascades)==0)
+  {
+    return(NULL)
+  }else{
+    structure(subcascades,class='Subcascades')
+  }
+}
+
+#generic function for formatting outputs of a Subcascades object
+format <- function(subcascades, ...) UseMethod("format")
+
+#implementation of the generic function \code{\link{format}} to give an formatted output of a Subcascades output
+format.Subcascades <- function(x, printSizes=length(x), ...) {
+  #if user specified a size too large, change to length of subcascades list
+  if(printSizes > length(x)) {
+    printSizes <- length(x)
+  }
+  print.default(x[1:printSizes],...)
+}

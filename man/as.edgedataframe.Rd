@@ -8,26 +8,23 @@ as.edgedataframe(subcascades)
 }
 \arguments{
 \item{subcascades}{A Subcascades object as it is returned by \code{\link{subcascades}}-function.
-The Subcascades object is made up of a list of matrices.
-Each matrix comprises the evaluation results of cascades of a specific length and
+The Subcascades object is made up of a list of matrices. 
+Each matrix comprises the evaluation results of cascades of a specific length and 
 is sorted row-wise according to the achieved minimal classwise sensitivities of the cascades (decreasing).
 The rownames show the class order by a character string of type '1>2>3' and the entries the sensitivity for each position of the cascade.}
 }
 \value{
-A Subcascades object comprising the evaluated cascades and their performances.
-The Subcascades object is made up of a list of matrices.
-Each matrix comprises the evaluation results of cascades of a specific length and
-is sorted row-wise according to the achieved minimal classwise sensitivities of the cascades (decreasing).
-The rownames show the class order by a character string of type '1>2>3' and the entries the sensitivity for each position of the cascade.
+A data.frame that can be used to generate a graph. 
+The first and second column correspond to all pairwise relations (from - to) of the cascades within the
+Subcascades object. The 'CASC_ID' column contains the same ID for all edges belonging to the same cascade.
+The 'SIZE' column gives the size of the cascade to which the repective column bleongs.
+The method returns NULL if the object subcascades is empty.
 }
 \description{
 Converts from a Subcascades object to a weighted edge list.
 }
 \details{
-Converts a Subcascades object to a data frame that can be used to generate a graph.
-The first and second column correspond to all pairwise relations of the cascades within the
-Subcascades object. The 'CASC_ID' column contains the same ID for all edges belonging to the same cascade.
-The 'SIZE' column gives the size of the cascade to which the repective column bleongs.
+Converts a Subcascades object to a data.frame that can be used to generate a graph.
 }
 \examples{
 library(TunePareto)
@@ -35,24 +32,17 @@ library(igraph)
 data(esl)
 data = esl$data
 labels = esl$labels
-foldList = generateCVRuns(labels  = labels,
-                          ntimes      = 2,
-                          nfold       = 2,
-                          leaveOneOut = FALSE,
-                          stratified  = TRUE)
-genMap = gen.predictionMap(data, labels, foldList = foldList, 
-classifier = tunePareto.svm(), kernel='linear')
+predMap = predictionMap(data, labels, 
+                       classifier = tunePareto.svm(), kernel='linear')
 
 # generate a dataframe
-subcascades = subcascades(genMap,thresh=0.65,size=4)
+subcascades = subcascades(predMap,thresh=0.65,size=4)
 edges = as.edgedataframe(subcascades)
 g = graph_from_data_frame(edges[,c(1,2)], directed = TRUE)
 E(g)$weight = edges[,3]
 plot(g,edge.color=edges[,3],edge.arrow.size=0.5,
-edge.curved =seq(-0.5, 1, length = ecount(g)))
-
-
+     edge.curved =seq(-0.5, 1, length = ecount(g)))
 }
 \seealso{
-\code{\link{as.groupwise}}, \code{\link{as.subcascades}}
+\code{\link{groupwise}}, \code{\link{as.subcascades}}
 }

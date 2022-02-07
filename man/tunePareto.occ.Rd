@@ -7,14 +7,14 @@
 tunePareto.occ(base.classifier)
 }
 \arguments{
-\item{base.classifier}{A predefined TuneParetoClassifier object used as binary classifier
-for the ordinal classifier cascade. There exist five classifier types that
+\item{base.classifier}{A predefined TuneParetoClassifier object used as binary classifier 
+for the ordinal classifier cascade. There exist five classifier types that 
 can be used: tunePareto.knn(), tunePareto.svm(), tunePareto.tree(), tunePareto.randomForest(),
-tunePareto.NaiveBayes(). For more information about these classifier functions please refer to
+tunePareto.NaiveBayes(). For more information about these classifier functions please refer to 
 the corresponding help page of like \code{TunePareto::\link{tunePareto.knn}}.}
 }
 \value{
-Returns an object of class TuneParetoClassifier (see: \code{TunePareto::\link{tuneParetoClassifier}}).
+Returns an object of class TuneParetoClassifier (see: \code{TunePareto::\link{tuneParetoClassifier}}). 
 This can be passed to the function trainTuneParetoClassifier (see: \code{TunePareto::\link{trainTuneParetoClassifier}}).
 }
 \description{
@@ -23,7 +23,8 @@ TunePareto wrapper for the ordinal classifier cascade.
 \details{
 The "tunePareto.occ" encapsulates the classifier of an ordinal classifier cascade.
 Additionally, to the parameters of the corresponding base classifier the "class.order"
-parameter can be provided.
+parameter can be provided. It is either a character vector, a numeric vector, 
+or a vector representing a cascade of the following format '1>2>4'.
 }
 \examples{
 library(TunePareto)

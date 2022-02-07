@@ -24,17 +24,15 @@
 #'                           nfold       = 2,
 #'                           leaveOneOut = FALSE,
 #'                           stratified  = TRUE)
-#' genMap = gen.predictionMap(data, labels, foldList = foldList, 
-#' classifier = tunePareto.svm(), kernel='linear')
+#' predMap = predictionMap(data, labels, foldList = foldList, 
+#'                        classifier = tunePareto.svm(), kernel='linear')
 #' # generate Subcascades object
-#' subcascades = subcascades(genMap,thresh=0.7)
+#' subc = subcascades(predMap,thresh=0.7)
 #' 
 #' # filters out cascades that have a length of 3
-#' dropSize(subcascades,size=3)
+#' dropSize(subc,size=3)
 #' # filters out cascades that have a length of 3 or 4
-#' dropSize(subcascades, size=c(3,4))
-
-
+#' dropSize(subc, size=c(3,4))
 dropSize <- function(subcascades=NULL, size = NA)
 {
     #################################################

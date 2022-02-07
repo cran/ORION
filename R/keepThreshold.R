@@ -22,16 +22,16 @@
 #'                           nfold       = 2,
 #'                           leaveOneOut = FALSE,
 #'                           stratified  = TRUE)
-#' genMap = gen.predictionMap(data, labels, foldList = foldList, 
-#' classifier = tunePareto.svm(), kernel='linear')
+#' predMap = predictionMap(data, labels, foldList = foldList, 
+#'                        classifier = tunePareto.svm(), kernel='linear')
 #' # generate Subcascades object
-#' subcascades = subcascades(genMap,thresh=0.5)
+#' subc = subcascades(predMap,thresh=0.5)
 #' 
 #' # filters for cascades that 
 #' # 1. have a minimal classwise sensitivity >= 0.6
-#' keepThreshold(subcascades,thresh=0.6)
+#' keepThreshold(subc,thresh=0.6)
 #' # 2. have a minimal classwise sensitivity <= 0.6
-#' keepThreshold(subcascades, comparison = '<=', thresh=0.6)
+#' keepThreshold(subc, comparison = '<=', thresh=0.6)
 
 
 keepThreshold <- function(subcascades = NULL, thresh=0, comparison = '>=')

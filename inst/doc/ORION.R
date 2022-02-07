@@ -44,22 +44,22 @@ foldList = generateCVRuns(  labels= labels,
 
 ## -----------------------------------------------------------------------------
 #generate the predicition map
-genMap = gen.predictionMap(data, labels, foldList = foldList, 
+predMap = predictionMap(data, labels, foldList = foldList, 
                             classifier = tunePareto.svm(), kernel='linear')
 
 ## -----------------------------------------------------------------------------
-names(genMap)
+names(predMap)
 
 ## -----------------------------------------------------------------------------
-genMap$meta[,c(1,11,21)]
+predMap$meta[,c(1,11,21)]
 
 ## -----------------------------------------------------------------------------
-genMap$pred[1:5,c(1,11,21)]
+predMap$pred[1:5,c(1,11,21)]
 
 ## -----------------------------------------------------------------------------
 #analyse the subcascades
-subcascades = subcascades(genMap, thresh=0.6)
-print(subcascades, max = 10)
+subcascades = subcascades(predMap, thresh=0.6)
+print(subcascades, printSizes = 2) 
 
 ## -----------------------------------------------------------------------------
 # create a trained classifier model for to top ranked cascade of length 5
@@ -77,15 +77,22 @@ prediction <- predict(object = model, newdata = data)
 sensitivites = table(prediction[prediction==labels])/table(labels)
 
 ## -----------------------------------------------------------------------------
+# make two Subcascades objects
+subcascades1 = subcascades(predMap, size = c(3,4), thresh = 0.6)
+subcascades2 = subcascades(predMap, size = c(4), thresh = 0.5)
+# add the cascades of subcascades2 to subcascades1
+mergeSubcascades(subcascades1, subcascades2)
+
+## -----------------------------------------------------------------------------
 summary(subcascades)
 
 ## -----------------------------------------------------------------------------
-mat <- summaryGroupwise(subcascades)
-mat
+groupwise <- groupwise(subcascades)
+groupwise$size.4
 
 ## -----------------------------------------------------------------------------
-groupwise <- as.groupwise(subcascades)
-groupwise$size.4
+groupwise <- groupwise(subcascades)
+summary(groupwise)
 
 ## -----------------------------------------------------------------------------
 subcascades.rev <- as.subcascades(groupwise)
@@ -155,22 +162,32 @@ result <- dropSets(subcascades, sets=set1, direction = 'super',
 result$size.4
 
 ## -----------------------------------------------------------------------------
-result.neighbourhood = confusion.table(genMap, cascade = '0>1>3>4', 
+result.neighbourhood = confusionTable(predMap, cascade = '0>1>3>4', 
                                         other.classes='all', sort = TRUE)
 result.neighbourhood
 
+## ----fig.width=7, fig.asp = 0.8, fig.align = 'center', strip.white=TRUE,echo = TRUE----
+#generate the predicition map in a reclassification experiment
+predMap = predictionMap(data, labels, foldList = NULL, 
+                            classifier = tunePareto.svm(), kernel='linear')
+plot(predMap, plot.sampleIDs=FALSE, 
+     label.colors=c('#7fc97f','#beaed4','#fdc086','#ffff99','#386cb0'))
+
 ## ----fig.width=5, fig.height=6, fig.align = 'center', strip.white=TRUE,echo = TRUE----
 subcascades = dropSize(subcascades,c(2,3))
-plot(subcascades,row.sort = 'max',digits=2,thresh = 0.6)
+plot(subcascades,row.sort = 'max',digits=2)
+
+## ----fig.show='hide', results = FALSE-----------------------------------------
+plot(groupwise)
 
 ## ----fig.width=5, fig.asp = 0.7, fig.align = 'center', strip.white=TRUE,echo = FALSE----
 plot(result.neighbourhood, digits=2)
 
 ## -----------------------------------------------------------------------------
-base.classifier = gen.conf(genMap)
+base.classifier = conf(predMap)
 
 ## ----fig.width=5, fig.asp = 0.9, fig.align = 'center', strip.white=TRUE,echo = FALSE----
-plot(base.classifier, digits=2,symmetric=TRUE, na.color = 'white')
+plot(base.classifier, onlySens=TRUE , digits=2,symmetric=TRUE, na.color = 'white')
 
 ## -----------------------------------------------------------------------------
 #filter for minimal class-wise sensitivity and size

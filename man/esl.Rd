@@ -30,17 +30,17 @@ data(esl)
 }
 \references{
 ordinal, real-world datasets donated by Dr. Arie Ben David (Holon Inst. of Technology/Israel)
-Donor: Arie Ben David
-MIS, Dept. of Technology Management
-Holon Academic Inst. of Technology
-52 Golomb St.
-Holon 58102
-Israel
-abendav@hait.ac.il
-Owner: Yoav Ganzah
-Business Administration School
-Tel Aviv Univerity
-Ramat Aviv 69978
-Israel
+ Donor: Arie Ben David
+          MIS, Dept. of Technology Management 
+          Holon Academic Inst. of Technology
+          52 Golomb St.
+          Holon 58102
+          Israel
+          abendav@hait.ac.il
+  Owner: Yoav Ganzah
+          Business Administration School
+          Tel Aviv Univerity
+          Ramat Aviv 69978
+          Israel
 }
 \keyword{datasets}
