@@ -2,6 +2,8 @@
 #' 
 #' Plots a heatmap that shows base classifier performance.
 #' 
+#' @importFrom grDevices colorRampPalette rainbow
+#' @importFrom graphics abline axis mtext plot plot.default par polygon rect strwidth text
 #' @inheritParams summarySubcascades
 #' @inheritParams plot.Subcascades
 #' @param x
@@ -478,6 +480,7 @@ plotBaseClassifier <- function (   x = NULL,
 #' conf <- conf(predMap)
 #' 
 #' plot(conf, onlySens=TRUE, symmetric=TRUE)
+#' @export
 plot.Conf <- function( x            = NULL,
                       classNames   = NULL,
                       onlySens = FALSE,
@@ -579,6 +582,7 @@ plot.Conf <- function( x            = NULL,
 #' conf.table <- confusionTable(predMap,cascade='0>1>3>4',other.classes = 'all')
 #' 
 #' plot(conf.table)
+#' @export
 plot.ConfusionTable <- function( x       = NULL,
                                   classNames = NULL,
                                   main    = 'extended confusion table',
@@ -828,6 +832,7 @@ plot.ConfusionTable <- function( x       = NULL,
 #' 
 #' plot(subc,row.sort='max')
 #' 
+#' @export
 plot.Subcascades <- function( x       = NULL,
                               classNames = NULL,
                                class.sort = '',
@@ -1085,6 +1090,7 @@ plot.Subcascades <- function( x       = NULL,
 #' 
 #' plot(groupwise,row.sort='max')
 #' 
+#' @export
 plot.Groupwise <- function(x       = NULL,
                class.sort = '',
                row.sort = 'sens',
@@ -1170,6 +1176,7 @@ plot.Groupwise <- function(x       = NULL,
 #' 
 #' plot(predMap)
 #' 
+#' @export
 plot.PredictionMap <- function(x=NULL,
                                 xlab = 'samples',
                                 ylab = 'base classifiers',

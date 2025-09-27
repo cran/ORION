@@ -33,6 +33,7 @@
 #'                        classifier = tunePareto.svm(), kernel='linear')
 #' 
 #' conf = conf(predMap)
+#' @export
 conf <- function(predictionMap=NULL)
 {
     #################################################
@@ -82,9 +83,10 @@ conf <- function(predictionMap=NULL)
 }
 
 #generic function for formatting outputs of a Conf object
-format <- function(conf, ...) UseMethod("format")
+format <- function(x, ...) UseMethod("format")
 
 #implementation of the generic function \code{\link{format}} to give an formatted output of a Conf output
+#' @export
 format.Conf <- function(x, printfC = TRUE, printsC = TRUE, ...) {
   if(printfC) {
     which.negatives <- which(apply(x$fC,1,mean) == -1)

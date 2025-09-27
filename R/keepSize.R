@@ -33,8 +33,7 @@
 #' keepSize(subc,size=3)
 #' # filters for cascades that have a length of 3 or 4
 #' keepSize(subc, size=c(3,4))
-
-
+#' @export 
 keepSize <- function(subcascades=NULL, size = NA)
 {
     #################################################

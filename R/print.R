@@ -31,6 +31,7 @@
 #'                        classifier = tunePareto.svm(), kernel='linear')
 #'                            
 #' print(predMap, showMeta=TRUE, showPred=TRUE)
+#' @export
 print.PredictionMap <- function(x, showMeta=TRUE, showPred=TRUE , ...) {
   if(!inherits(x, "PredictionMap"))
     stop("\"x\" must be a PredictionMap object!")
@@ -73,6 +74,7 @@ print.PredictionMap <- function(x, showMeta=TRUE, showPred=TRUE , ...) {
 #' 
 #' # print subcascades for the largest 2 sizes
 #' print(subc, printSize=2)
+#' @export
 print.Subcascades <- function(x, printSizes=length(x), ...) {
   if(!inherits(x, "Subcascades"))
     stop("\"x\" must be a Subcascades object!")
@@ -117,6 +119,7 @@ print.Subcascades <- function(x, printSizes=length(x), ...) {
 #' conf = conf(predMap)
 #' 
 #' print(conf)
+#' @export
 print.Conf <- function(x, printfC=TRUE, printsC=TRUE, ...) {
   if(!inherits(x, "Conf"))
     stop("\"x\" must be a Conf object!")
@@ -153,6 +156,7 @@ print.Conf <- function(x, printfC=TRUE, printsC=TRUE, ...) {
 #' confTable = confusionTable(predMap, cascade = '0>2>3>4')
 #' 
 #' print(confTable)
+#' @export
 print.ConfusionTable <- function(x, ...) {
   if(!inherits(x, "ConfusionTable"))
     stop("\"x\" must be a ConfusionTable object!")
@@ -199,6 +203,7 @@ print.ConfusionTable <- function(x, ...) {
 #' groupwise = groupwise(subc)
 #' 
 #' print(groupwise, printSizes = 2)
+#' @export
 print.Groupwise <- function(x, printSizes = length(x), ...) {
   if(!inherits(x, "Groupwise"))
     stop("\"x\" must be a Groupwise object!")

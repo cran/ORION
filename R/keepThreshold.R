@@ -32,8 +32,7 @@
 #' keepThreshold(subc,thresh=0.6)
 #' # 2. have a minimal classwise sensitivity <= 0.6
 #' keepThreshold(subc, comparison = '<=', thresh=0.6)
-
-
+#' @export 
 keepThreshold <- function(subcascades = NULL, thresh=0, comparison = '>=')
 {
     #################################################

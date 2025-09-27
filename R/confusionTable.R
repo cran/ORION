@@ -41,6 +41,7 @@
 #' # and the assignment of all samples of the other classes.
 #' confTable = confusionTable(predMap, cascade = '0>2>3>4', 
 #'                 other.classes='all', sort = TRUE)
+#' @export 
 confusionTable <- function(predictionMap=NULL, cascade = NULL, other.classes=NULL, sort = TRUE)
 {
     #################################################
@@ -160,9 +161,10 @@ confusionTable <- function(predictionMap=NULL, cascade = NULL, other.classes=NUL
 }
 
 #generic function for formatting outputs of a ConfusionTable object
-format <- function(confusionTable, ...) UseMethod("format")
+format <- function(x, ...) UseMethod("format")
 
 #implementation of the generic function \code{\link{format}} to give an formatted output of a ConfusionTable output
+#' @export 
 format.ConfusionTable <- function(x, ...) {
   cat("ConfusionTable:\n")
   

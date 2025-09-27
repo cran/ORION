@@ -26,7 +26,7 @@
 #'           Ramat Aviv 69978
 #'           Israel
 #'
-#' @source \href{https://www.cs.waikato.ac.nz/ml/weka/datasets.html}{Weka dataset}
+#' @source \href{https://waikato.github.io/weka-wiki/datasets/}{Weka dataset}
 #' (datasets-arie_ben_david.tar.gz, 11,348 Bytes)
 #'
 #' @examples

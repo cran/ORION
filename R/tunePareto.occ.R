@@ -1,3 +1,6 @@
+#' @import TunePareto
+#' @importFrom stats predict
+# @importFrom TunePareto tunePareto.knn tuneParetoClassifier trainTuneParetoClassifier
 train.tunePareto.occ <- function(..., data, labels, base.classifier, class.order = NULL)
 {
   ##################################################################
@@ -69,6 +72,7 @@ train.tunePareto.occ <- function(..., data, labels, base.classifier, class.order
   return(result)
 }
 
+#' @export
 predict.tunePareto.occ <- function(object, newdata,...)
 {
   ##################################################################
@@ -120,7 +124,7 @@ predict.tunePareto.occ <- function(object, newdata,...)
 #' for the ordinal classifier cascade. There exist five classifier types that 
 #' can be used: tunePareto.knn(), tunePareto.svm(), tunePareto.tree(), tunePareto.randomForest(),
 #' tunePareto.NaiveBayes(). For more information about these classifier functions please refer to 
-#' the corresponding help page of like \code{TunePareto::\link{tunePareto.knn}}.
+#' the corresponding help page of like \code{\link[TunePareto:predefinedClassifiers]{TunePareto::tunePareto.knn()}}.
 #' 
 #' @details 
 #' The "tunePareto.occ" encapsulates the classifier of an ordinal classifier cascade.
@@ -129,8 +133,8 @@ predict.tunePareto.occ <- function(object, newdata,...)
 #' or a vector representing a cascade of the following format '1>2>4'.
 #' 
 #' @return 
-#' Returns an object of class TuneParetoClassifier (see: \code{TunePareto::\link{tuneParetoClassifier}}). 
-#' This can be passed to the function trainTuneParetoClassifier (see: \code{TunePareto::\link{trainTuneParetoClassifier}}).
+#' Returns an object of class TuneParetoClassifier (see: \code{\link[TunePareto:tuneParetoClassifier]{TunePareto::tuneParetoClassifier()}}). 
+#' This can be passed to the function trainTuneParetoClassifier (see: \code{\link[TunePareto:trainTuneParetoClassifier]{TunePareto::trainTuneParetoClassifier()}}).
 #' 
 #' @examples 
 #' library(TunePareto)
@@ -148,6 +152,7 @@ predict.tunePareto.occ <- function(object, newdata,...)
 #'          
 #' # predict labels
 #'prediction <- predict(object = model, newdata = data)
+#' @export
 tunePareto.occ <- function(base.classifier)
 {
     ##################################################################

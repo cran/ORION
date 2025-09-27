@@ -37,6 +37,7 @@
 #' 
 #' #create a Groupwise object
 #' groupwise = groupwise(subcascades)
+#' @export
 groupwise <- function(subcascades=NULL, maxCl=50)
 {
     #################################################
@@ -104,9 +105,10 @@ groupwise <- function(subcascades=NULL, maxCl=50)
 }
 
 #generic function for formatting outputs of a Groupwise object
-format <- function(groupwise, ...) UseMethod("format")
+format <- function(x, ...) UseMethod("format")
 
 #implementation of the generic function \code{\link{format}} to give an formatted output of a Groupwise output
+#' @export
 format.Groupwise <- function(x, printSizes = length(x), ...) {
   if(printSizes > length(x)) {
     printSizes <- length(x)

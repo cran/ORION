@@ -56,8 +56,7 @@
 #' result <- dropSets(subc, c('0>1>2','2>3>4>1'),
 #'                    direction = 'exact',ordered=TRUE)
 #' unlist(t(lapply(result,rownames)))         
-
-
+#' @export 
 dropSets <- function(subcascades=NULL, sets = NULL, direction = 'sub', ordered = FALSE,  neighborhood = 'direct', type = 'any')
 {
     #################################################

@@ -30,7 +30,7 @@
 #' dropThreshold(subc,thresh=0.6)
 #' # 2. have a minimal classwise sensitivity <= 0.6
 #' dropThreshold(subc, comparison = '<=', thresh=0.6)
-
+#' @export 
 dropThreshold <- function(subcascades=NULL, comparison = '>=', thresh=0)
 {
     #################################################

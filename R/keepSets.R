@@ -95,6 +95,7 @@
 #'                    direction = 'exact',ordered=TRUE)
 #' unlist(t(lapply(result,rownames)))         
 #'  
+#' @export 
 keepSets <- function(subcascades=NULL, sets = NULL, direction = 'sub', ordered = FALSE,  neighborhood = 'direct', type = 'any')
 {
     #################################################

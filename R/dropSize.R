@@ -33,6 +33,7 @@
 #' dropSize(subc,size=3)
 #' # filters out cascades that have a length of 3 or 4
 #' dropSize(subc, size=c(3,4))
+#' @export 
 dropSize <- function(subcascades=NULL, size = NA)
 {
     #################################################

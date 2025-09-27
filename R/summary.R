@@ -149,6 +149,7 @@ summaryClasses <- function(subcascades=NULL)
 #' subc <- subcascades(predMap,thresh=0.7,numSol=10000)
 #' 
 #' summary(subc)
+#' @export
 summary.Subcascades <- function(object=NULL, includeClassSummary=TRUE,  digits = 3, ...)
 {
     #################################################
@@ -243,6 +244,7 @@ summary.Subcascades <- function(object=NULL, includeClassSummary=TRUE,  digits =
 #' groupwise = groupwise(subc,maxCl=50)
 #' 
 #' summary(groupwise)
+#' @export
 summary.Groupwise <- function(object=NULL, ...)
 {
   #################################################
@@ -326,6 +328,7 @@ summary.Groupwise <- function(object=NULL, ...)
 #'                        classifier = tunePareto.svm(), kernel='linear')
 #' 
 #' summary(predMap)
+#' @export
 summary.PredictionMap <- function(object=NULL, ...) {
   cat("Object of class PredictionMap\n")
   cat("Prediction map parameters\n\n")
@@ -367,6 +370,7 @@ summary.PredictionMap <- function(object=NULL, ...) {
 #' conf = conf(predMap)
 #' 
 #' summary(conf)
+#' @export
 summary.Conf <- function(object=NULL, ...) {
   cat("Summary of Conf\n")
   cat("Conf characteristics:\n\n")
@@ -415,6 +419,7 @@ summary.Conf <- function(object=NULL, ...) {
 #' confusionTable = confusionTable(predMap, cascade = '0>2>3>4')
 #' 
 #' summary(confusionTable)
+#' @export
 summary.ConfusionTable <- function(object=NULL, ...) {
   cat("Summary of ConfusionTable\n\n")
   cat("Cascade: ")

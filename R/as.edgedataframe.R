@@ -34,6 +34,7 @@
 #' E(g)$weight = edges[,3]
 #' plot(g,edge.color=edges[,3],edge.arrow.size=0.5,
 #'      edge.curved =seq(-0.5, 1, length = ecount(g)))
+#' @export
 as.edgedataframe <- function(subcascades){
   
   #################################################

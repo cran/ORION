@@ -63,6 +63,7 @@
 #' subc = subcascades(predMap, thresh=0.6, size=c(2,4))
 #' # evaluates the performance of the cascade '0>1>2>3>4'.
 #' subc = subcascades(predMap, sets = c('0>1>2>3>4'))
+#' @export
 subcascades<- function(predictionMap=NULL, sets = NULL, thresh=0, size=NA, numSol=1000)
 {
     #################################################
@@ -233,6 +234,7 @@ subcascades<- function(predictionMap=NULL, sets = NULL, thresh=0, size=NA, numSo
 #' subc2 = subcascades(predMap, size = c(4), thresh = 0.5)
 #' # add the cascades of subcascades2 to subcascades1
 #' mergeSubcascades(subc1, subc2)
+#' @export
 mergeSubcascades <- function(subcascades1=NULL, subcascades2=NULL){
   #################################################
   ##
@@ -320,6 +322,7 @@ mergeSubcascades <- function(subcascades1=NULL, subcascades2=NULL){
 #' 
 #' #convert it to a Subcascades object
 #' converted.subcascades = as.subcascades(groupwise)
+#' @export
 as.subcascades <- function(groupwise=NULL)
 {
   #################################################
@@ -352,9 +355,10 @@ as.subcascades <- function(groupwise=NULL)
 }
 
 #generic function for formatting outputs of a Subcascades object
-format <- function(subcascades, ...) UseMethod("format")
+format <- function(x, ...) UseMethod("format")
 
 #implementation of the generic function \code{\link{format}} to give an formatted output of a Subcascades output
+#' @export
 format.Subcascades <- function(x, printSizes=length(x), ...) {
   #if user specified a size too large, change to length of subcascades list
   if(printSizes > length(x)) {
