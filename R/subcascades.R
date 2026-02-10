@@ -64,8 +64,7 @@
 #' # evaluates the performance of the cascade '0>1>2>3>4'.
 #' subc = subcascades(predMap, sets = c('0>1>2>3>4'))
 #' @export
-subcascades<- function(predictionMap=NULL, sets = NULL, thresh=0, size=NA, numSol=1000)
-{
+subcascades<- function(predictionMap=NULL, sets = NULL, thresh=0, size=NA, numSol=1000){
     #################################################
     ##
     ## Check parameter 'predictionMap'
@@ -109,7 +108,7 @@ subcascades<- function(predictionMap=NULL, sets = NULL, thresh=0, size=NA, numSo
       if(any(size<2)|any(size>numClass))
           stop(errorStrings('size.cl'))
       
-    } else { #check parameter sets
+    }else{ #check parameter sets
       
       if((is.character(sets) & is.vector(sets))){
         correct <- regexpr(pattern = '^([[:digit:]]+>)+[[:digit:]]+$', text = sets)>0
@@ -123,8 +122,7 @@ subcascades<- function(predictionMap=NULL, sets = NULL, thresh=0, size=NA, numSo
       if(is.numeric(sets) & is.vector(sets))
         sets <- list(sets)
       
-      if(!is.list(sets))
-      {
+      if(!is.list(sets)){
         stop(errorStrings('sets'))
       }else{
         if(!all(sapply(sets, function(x){is.numeric(x)&is.vector(x)})))
@@ -258,12 +256,10 @@ mergeSubcascades <- function(subcascades1=NULL, subcascades2=NULL){
   if(!is.null(subcascades2))
     subcascades2 <- subcascades2[sapply(subcascades2, function(x){!is.null(x)})]
   
-  if(length(subcascades1)!=0)
-  {
+  if(length(subcascades1)!=0){
     result = subcascades1
     
-    if(length(subcascades2)!=0)
-    {
+    if(length(subcascades2)!=0){
       for (size in names(subcascades2)){
         if (size %in% names(result)){
           add.casc = !(rownames(subcascades2[[size]]) %in% rownames(result[[size]]))
@@ -323,8 +319,7 @@ mergeSubcascades <- function(subcascades1=NULL, subcascades2=NULL){
 #' #convert it to a Subcascades object
 #' converted.subcascades = as.subcascades(groupwise)
 #' @export
-as.subcascades <- function(groupwise=NULL)
-{
+as.subcascades <- function(groupwise=NULL){
   #################################################
   ##
   ## Check parameter 'groupwise'
@@ -346,8 +341,7 @@ as.subcascades <- function(groupwise=NULL)
     return(casc[names(min.sens),,drop = FALSE])
   })
   
-  if(length(subcascades)==0)
-  {
+  if(length(subcascades)==0){
     return(NULL)
   }else{
     structure(subcascades,class='Subcascades')

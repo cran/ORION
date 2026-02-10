@@ -12,7 +12,7 @@
 
 <meta name="author" content="LM Schäfer, R Szekely, L Lausser, HA Kestler" />
 
-<meta name="date" content="2025-09-27" />
+<meta name="date" content="2026-02-10" />
 
 <title>ORION Package Vignette</title>
 
@@ -341,11 +341,11 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">ORION Package Vignette</h1>
 <h4 class="author">LM Schäfer, R Szekely, L Lausser, HA Kestler</h4>
-<h4 class="date">2025-09-27</h4>
+<h4 class="date">2026-02-10</h4>
 
 
 
-<pre><code>## Warning: Paket &#39;igraph&#39; wurde unter R Version 4.3.3 erstellt</code></pre>
+<pre><code>## Warning: package &#39;igraph&#39; was built under R version 4.3.3</code></pre>
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
 <p>The <em>ORION</em> package is designed for screening feature
@@ -566,8 +566,8 @@ the sample analyzed.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co">#generate the predicition map</span></span>
 <span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>predMap <span class="ot">=</span> <span class="fu">predictionMap</span>(data, labels, <span class="at">foldList =</span> foldList, </span>
 <span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>                            <span class="at">classifier =</span> <span class="fu">tunePareto.svm</span>(), <span class="at">kernel=</span><span class="st">&#39;linear&#39;</span>)</span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co">#&gt; Lade nötiges Paket: e1071</span></span>
-<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">#&gt; Warning: Paket &#39;e1071&#39; wurde unter R Version 4.3.3 erstellt</span></span></code></pre></div>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co">#&gt; Loading required package: e1071</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">#&gt; Warning: package &#39;e1071&#39; was built under R version 4.3.3</span></span></code></pre></div>
 <p>The printed output shows that there is an additional packages loaded.
 The <em>e1071</em> package is loaded as the <em>tunePareto.svm()</em>
 function uses that package. If <em>parallel</em> is defined as
