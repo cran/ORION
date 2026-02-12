@@ -20,15 +20,8 @@
 #' If the foldList is set to \code{NULL} (default) reclassification is performed.
 #' @param parallel
 #' Either TRUE or FALSE (default). If TRUE the pairwise training is performed parallelized.
-#' @param learner Character string specifying the classifier learner
-#'  \itemize{
-#'    \item \code{"tunePareto"}: TunePareto classifier (default)
-#'    \item \code{"e1071"}: direct SVM via \pkg{e1071}
-#'  }
-#' The \code{"e1071"} learner uses \code{\link[e1071]{svm}}.
-#' The \code{"tunePareto"} learner requires a `classifier` object
-#' from the \pkg{TunePareto} package.
-#' @param classifier A TunePareto classifier object. \cr
+#' @param classifier
+#' A TunePareto classifier object. \cr 
 #' For detailed information refer to \code{\link[TunePareto:tuneParetoClassifier]{TunePareto::tuneParetoClassifier()}}.
 #' @param ...
 #' Further parameters of the classifier object.
@@ -59,14 +52,14 @@
 #'                           stratified  = TRUE)
 #'
 #' # svm with linear kernel
-#' predMap = predictionMap(data, labels, foldList = foldList, learner = "tunePareto",
+#' predMap = predictionMap(data, labels, foldList = foldList,
 #'                        classifier = tunePareto.svm(), kernel='linear')
 #' \donttest{
 #' # knn with k = 3
-#' predMap = predictionMap(data, labels, foldList = foldList, learner = "tunePareto",
+#' predMap = predictionMap(data, labels, foldList = foldList,
 #'                        classifier = tunePareto.knn(), k = 3)
 #' # randomForest
-#' predMap = predictionMap(data, labels, foldList = foldList, learner = "tunePareto",
+#' predMap = predictionMap(data, labels, foldList = foldList,
 #'                        classifier = tunePareto.randomForest())
 #'                            }
 #' @export
@@ -74,7 +67,6 @@ predictionMap <- function(data=NULL,
                           labels=NULL,
                           foldList = NULL,
                           parallel = FALSE,
-                          learner = c("tunePareto", "e1071"),
                           classifier = NULL, ...){
 
   if(parallel == TRUE){
@@ -123,16 +115,14 @@ predictionMap <- function(data=NULL,
 
     #################################################
     ##
-    ## Check parameter 'learner'
+    ## Check parameter 'classifier'
 
-    learner <- match.arg(learner)
-    if(learner=="tunePareto"){
-      if(is.null(classifier))
-        stop(errorStrings('classifierMissing'))
+    if(is.null(classifier))
+      stop(errorStrings('classifierMissing'))
+    
+    if(!inherits(classifier, "TuneParetoClassifier"))
+      stop(errorStrings("classifier"))
 
-      if(!inherits(classifier, "TuneParetoClassifier"))
-        stop(errorStrings("classifier"))
-    }
 
     #################################################
 
@@ -214,17 +204,14 @@ predictionMap <- function(data=NULL,
                     train.id <-train.id[ c( which(labels[train.id] == comb[1]),
                                             which(labels[train.id] == comb[2])) ]
 
-                    model <- .train_classifier(
-                      learner     = learner,
-                      classifier  = classifier,
-                      trainData   = data[train.id,,drop=FALSE],
-                      trainLabels = labels[train.id],
-                      ...
-                    )
+                    model <- TunePareto::trainTuneParetoClassifier(
+                      classifier = classifier,
+                      trainData = data[train.id,,drop=FALSE],
+                      trainLabels = labels[train.id], ...)
 
                     print.output.classifier <- invisible(capture.output(model))
 
-                    pred.cl <- .predict_classifier(model, data[fold,,drop=FALSE])
+                    pred.cl <- as.numeric(as.character(predict(model, newdata = data[fold,,drop=FALSE])))
 
                     return(pred.cl)
                 }

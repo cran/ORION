@@ -1,4 +1,4 @@
-e2c98377b7d9156a88399d3a84532acb *DESCRIPTION
+62ee8adfda70b5fe919302a522c7b501 *DESCRIPTION
 b1bfd78f288f613eca6e5ed988424227 *NAMESPACE
 a3aa97f1b04fcd455b46138f0ff612a7 *R/as.edgedataframe.R
 37a1fa02a90df15c99d14538bee56bca *R/cand.subcascades.R
@@ -25,7 +25,7 @@ ea4bcff52f5676f9d1325fbe2adac7d6 *R/esl_org-data.R
 59817b4b73f419e8f0482fa1721351c9 *R/ordinalData.R
 65494d275a3af42ca9ea3449f5009844 *R/package.R
 958f7843d77408182bf713d5cbdb00c2 *R/plot.R
-aed2fe09392c6a74b9f5ff05e45418d8 *R/predictionMap.R
+8ed2198fe778a39ff2add65dc5258e8a *R/predictionMap.R
 76b335270809f5d4e1bfde42cee4bdc7 *R/print.R
 cf3c83a2605e1d932e8a699bc8ce9993 *R/screeningData.R
 b60bc61356470e4295c078093f2e46b2 *R/subcascades.R
@@ -41,11 +41,11 @@ f700070a3d24026467fc6b5145a331ff *data/nonOrdinalData.RData
 5579d7d849bba8b14051334f2c966af3 *data/screeningData.RData
 3c08d58e3ab83120826c091203e2261a *inst/doc/ORION.R
 e6098801dfdc4562dcac46482dc883a1 *inst/doc/ORION.Rmd
-a9928679905c1231526c7e60d480dced *inst/doc/ORION.html
+aece9b91177f08308f958490bb86b522 *inst/doc/ORION.html
 a825e1c6fef79fd2f69c980c1d960373 *inst/extdata/artificial_1D_alternatives_sd_0.1-0.4.RData
 7fd23b7ac086b18689cd43046b292a82 *inst/extdata/artificial_2D_Ordinal.RData
 036454bb18fa3dd38df04ae3aa66d4f3 *inst/extdata/artificial_2D_alternatives_sd_0.2-0.3.RData
-3445e07c78e7e440d7eb71d5d80c2916 *man/ORION-package.Rd
+549a649a81bd21a49465bcc3fefb2aba *man/ORION-package.Rd
 389fc519141514e3912bc5833fabe8d3 *man/as.edgedataframe.Rd
 007b44ce0c3b3dc61ecc5be11f421aaf *man/as.subcascades.Rd
 b01d74c2bd89fced2f81f86b4ca20446 *man/conf.Rd
@@ -70,7 +70,7 @@ be05572289c786024bd4a86a7065b4b5 *man/plot.Groupwise.Rd
 1233553de3a6d753d2896382b71ded0a *man/plot.Subcascades.Rd
 b16edf24cd1a04688f8866c71da1f147 *man/plotBaseClassifier.Rd
 ed911929d5331003b4ac40b4bf0f10db *man/plotConf.Rd
-7e7f08d522b09f235d439c46be013c8a *man/predictionMap.Rd
+305b97341f5768ece9f72e593a91b962 *man/predictionMap.Rd
 4f1dc23f71535b7ba28c0d872d128dc7 *man/print.Conf.Rd
 8a84f71befb6629af84f49399de52768 *man/print.ConfusionTable.Rd
 45ad27d40b42874190411ea2e7589f1b *man/print.Groupwise.Rd
@@ -91,7 +91,7 @@ c649e7c8237baa952cd9b747887806f1 *man/summary.Subcascades.Rd
 32b378afd91bbe61797c9ad396566467 *src/cascade.h
 7c22b1b500cab25872924e218f1645f5 *src/registerDynamicSymbol.c
 12f3ee4f3f327aa3ce131311fa8f9f2b *tests/testthat.R
-e22d8534ae440161603991a4cb07505e *tests/testthat/test-e-svm-with-projection.R
-4909ae38b8594892983070ceac443975 *tests/testthat/test-e-svm-without-projection.R
-8ea8e76ecb1779dad2bcf1429801c9b1 *tests/testthat/test-tunePareto-svm-with-projection.R
+6b202539db1af77b793930c12b270b0e *tests/testthat/test-knn-with-projection.R
+c6d21483bc8afb8abc2ffb4a282fda0a *tests/testthat/test-svm-with-projection.R
+dd22af8fc815f50d05c5e85b973cd36c *tests/testthat/test-svm-without-projection.R
 e6098801dfdc4562dcac46482dc883a1 *vignettes/ORION.Rmd

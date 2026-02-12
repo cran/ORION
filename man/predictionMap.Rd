@@ -9,7 +9,6 @@ predictionMap(
   labels = NULL,
   foldList = NULL,
   parallel = FALSE,
-  learner = c("tunePareto", "e1071"),
   classifier = NULL,
   ...
 )
@@ -27,16 +26,7 @@ If the foldList is set to \code{NULL} (default) reclassification is performed.}
 
 \item{parallel}{Either TRUE or FALSE (default). If TRUE the pairwise training is performed parallelized.}
 
-\item{learner}{Character string specifying the classifier learner
- \itemize{
-   \item \code{"tunePareto"}: TunePareto classifier (default)
-   \item \code{"e1071"}: direct SVM via \pkg{e1071}
- }
-The \code{"e1071"} learner uses \code{\link[e1071]{svm}}.
-The \code{"tunePareto"} learner requires a `classifier` object
-from the \pkg{TunePareto} package.}
-
-\item{classifier}{A TunePareto classifier object. \cr
+\item{classifier}{A TunePareto classifier object. \cr 
 For detailed information refer to \code{\link[TunePareto:tuneParetoClassifier]{TunePareto::tuneParetoClassifier()}}.}
 
 \item{...}{Further parameters of the classifier object.}
@@ -67,14 +57,14 @@ foldList = generateCVRuns(labels  = labels,
                           stratified  = TRUE)
 
 # svm with linear kernel
-predMap = predictionMap(data, labels, foldList = foldList, learner = "tunePareto",
+predMap = predictionMap(data, labels, foldList = foldList,
                        classifier = tunePareto.svm(), kernel='linear')
 \donttest{
 # knn with k = 3
-predMap = predictionMap(data, labels, foldList = foldList, learner = "tunePareto",
+predMap = predictionMap(data, labels, foldList = foldList,
                        classifier = tunePareto.knn(), k = 3)
 # randomForest
-predMap = predictionMap(data, labels, foldList = foldList, learner = "tunePareto",
+predMap = predictionMap(data, labels, foldList = foldList,
                        classifier = tunePareto.randomForest())
                            }
 }

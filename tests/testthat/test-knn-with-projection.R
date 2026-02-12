@@ -19,9 +19,7 @@ test_that("Full pipeline with data projection",{
                            labels=projectedData$labs,
                            foldList = foldList,
                            parallel = FALSE,
-                           learner = "tunePareto",
-                           classifier = tunePareto.svm(), 
-                           kernel='linear') 
+                           classifier = tunePareto.knn(), k = 3) 
   
   ## test subcascades - keep longest cascades
   sub <- subcascades(predictionMap=predMap, sets = NULL, thresh=1, size=NA, numSol=1000)[1]
@@ -44,8 +42,8 @@ test_that("Full pipeline with data projection",{
   
   ### generate dot string graph
   dot_str <-generateGraphs(subcascade=simplifiedSub, useOldLabels=F, categoricalLabels=NULL)
-  #g <-  generateGraphs(subcascade=subArt1_0, useOldLabels=T, numericLabels=0:10, categoricalLabels=letters[1:10])   # with categorical lables
-  #dot(g)
+  #dot_str <-  generateGraphs(subcascade=subArt1_0, useOldLabels=T, numericLabels=0:10, categoricalLabels=letters[1:10])   # with categorical lables
+  #dot(dot_str)
   expect_type(dot_str, "character")
 })
 

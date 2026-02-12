@@ -1,6 +1,6 @@
 Package: ORION
 Title: Ordinal Relations
-Version: 1.1.0
+Version: 1.1.1
 Depends: R (>= 3.5.0), TunePareto
 Imports: e1071, foreach, plotrix, stringr
 Suggests: doParallel, igraph, knitr, randomForest, rmarkdown, testthat
@@ -8,6 +8,7 @@ Suggests: doParallel, igraph, knitr, randomForest, rmarkdown, testthat
 Authors@R: c(person(given = "L", family = "Lausser", role = "aut"),
                  person(given = "LM", family = "Schaefer", role = "aut"),
                  person(given = "R", family = "Szekely", role = "aut"),
+		 person(given = "A", family = "Stolnicu", role = "aut"),
                  person(given = "HA", family = "Kestler", role = c("aut", "cre"),
                         email = "hans.kestler@uni-ulm.de"))
 Maintainer: HA Kestler <hans.kestler@uni-ulm.de>
@@ -15,13 +16,14 @@ Description: Functions to handle ordinal relations reflected within the feature 
 License: GPL-2
 Encoding: UTF-8
 LazyLoad: yes
-Packaged: 2026-02-10 12:28:25 UTC; anastolnicu
+Packaged: 2026-02-11 16:55:28 UTC; anastolnicu
 Author: L Lausser [aut],
   LM Schaefer [aut],
   R Szekely [aut],
+  A Stolnicu [aut],
   HA Kestler [aut, cre]
 NeedsCompilation: yes
 VignetteBuilder: knitr
 RoxygenNote: 7.3.2
 Repository: CRAN
-Date/Publication: 2026-02-10 21:10:02 UTC
+Date/Publication: 2026-02-12 11:10:02 UTC

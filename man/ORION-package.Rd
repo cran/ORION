@@ -16,6 +16,7 @@ Authors:
   \item L Lausser
   \item LM Schaefer
   \item R Szekely
+  \item A Stolnicu
 }
 
 }
