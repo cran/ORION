@@ -1,4 +1,4 @@
-62ee8adfda70b5fe919302a522c7b501 *DESCRIPTION
+c3f0169601f48734dfde7b9eb5af6e76 *DESCRIPTION
 b1bfd78f288f613eca6e5ed988424227 *NAMESPACE
 a3aa97f1b04fcd455b46138f0ff612a7 *R/as.edgedataframe.R
 37a1fa02a90df15c99d14538bee56bca *R/cand.subcascades.R
@@ -33,7 +33,7 @@ b60bc61356470e4295c078093f2e46b2 *R/subcascades.R
 4e591082bc5e6fa3fdd75a5b80b695fe *R/trainers.R
 8e40cd51ca2277d46751e4255fbb06b0 *R/tunePareto.occ.R
 ee5bc8fff6a54620b00226e62a22b293 *R/validateFolds.R
-4f86b95b18c9106a44148fe0feb9fbd0 *build/vignette.rds
+b6cdcd125e890c119f2555f56552785f *build/vignette.rds
 0fd12746a1a8b46a9409b9667f220e7a *data/esl.RData
 1a53d9de30f9eb024016266108029d98 *data/esl_org.RData
 f700070a3d24026467fc6b5145a331ff *data/nonOrdinalData.RData
@@ -41,11 +41,11 @@ f700070a3d24026467fc6b5145a331ff *data/nonOrdinalData.RData
 5579d7d849bba8b14051334f2c966af3 *data/screeningData.RData
 3c08d58e3ab83120826c091203e2261a *inst/doc/ORION.R
 e6098801dfdc4562dcac46482dc883a1 *inst/doc/ORION.Rmd
-aece9b91177f08308f958490bb86b522 *inst/doc/ORION.html
+f5d9f6cbb33e1b805b14f4dd37a90980 *inst/doc/ORION.html
 a825e1c6fef79fd2f69c980c1d960373 *inst/extdata/artificial_1D_alternatives_sd_0.1-0.4.RData
 7fd23b7ac086b18689cd43046b292a82 *inst/extdata/artificial_2D_Ordinal.RData
 036454bb18fa3dd38df04ae3aa66d4f3 *inst/extdata/artificial_2D_alternatives_sd_0.2-0.3.RData
-549a649a81bd21a49465bcc3fefb2aba *man/ORION-package.Rd
+7680079a4079d13198ca3029d5d0f40a *man/ORION-package.Rd
 389fc519141514e3912bc5833fabe8d3 *man/as.edgedataframe.Rd
 007b44ce0c3b3dc61ecc5be11f421aaf *man/as.subcascades.Rd
 b01d74c2bd89fced2f81f86b4ca20446 *man/conf.Rd

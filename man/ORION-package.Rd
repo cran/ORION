@@ -9,7 +9,7 @@
 Package description goes here.
 }
 \author{
-\strong{Maintainer}: HA Kestler \email{hans.kestler@uni-ulm.de}
+\strong{Maintainer}: L Lausser \email{ludwig.lausser@thi.de}
 
 Authors:
 \itemize{
